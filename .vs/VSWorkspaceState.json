@@ -1,0 +1,12 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\GymusApp",
+    "\\GymusApp\\Person",
+    "\\GymusApp\\Person\\Controllers",
+    "\\GymusApp\\Person\\Repositories",
+    "\\GymusApp\\Person\\Services"
+  ],
+  "SelectedNode": "\\GymusApp\\Person\\Controllers",
+  "PreviewInSolutionExplorer": false
+}

@@ -1,0 +1,40 @@
+### Persons
+GET {{baseUrl}}/persons/
+Accept: application/json
+
+###
+@id = 35
+GET {{baseUrl}}/persons/{{id}}
+
+###
+POST {{baseUrl}}/persons
+Content-Type: application/json
+Accept: application/json
+
+{
+  "firstName": "Mohamed",
+  "lastName": "BENIANE",
+  "email": "benianus3d@gmail.com",
+  "phone": "+213658854637",
+  "address": "city 36",
+  "birthdate": "1994-02-11"
+}
+
+###
+@person_id = 7
+PUT {{baseUrl}}/persons/{{person_id}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "firstName": "Mohamed",
+  "lastName": "BENIANE",
+  "email": "benianus3d@gmail.com",
+  "phone": "+213658854637",
+  "address": "city 36",
+  "birthdate": "1994-02-11"
+}
+
+###
+DELETE {{baseUrl}}/persons/{{id}}
+
