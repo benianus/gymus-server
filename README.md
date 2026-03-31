@@ -1,4 +1,5 @@
 # Gymus Server (.NET)
+This project is a gym management system.
 
 This project is an ASP.NET Core Web API for the Gymus application.
 
