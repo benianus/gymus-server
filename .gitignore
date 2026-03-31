@@ -6,5 +6,5 @@ riderModule.iml
 appsettings.json
 appsettings.Development.json
 gymus-server.http
-http-client.private.enc.json
 http-client.private.env.json
+#http-client.private.env.json
