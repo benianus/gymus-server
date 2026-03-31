@@ -3,7 +3,8 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
-http-client.private.env.json
-gymus-server.http
-appsettings.Development.json
 appsettings.json
+appsettings.Development.json
+gymus-server.http
+http-client.private.enc.json
+http-client.private.env.json

@@ -100,6 +100,7 @@ public class EmployeeRepository(IConfiguration configuration) : ICrudRepository<
             await connection.OpenAsync();
             command.Parameters.AddWithValue("@salary", data.Salary);
             command.Parameters.AddWithValue("@updated_at", data.UpdatedAt);
+            command.Parameters.AddWithValue("@id", id);
             await using var reader = await command.ExecuteReaderAsync();
             return await reader.ReadAsync() ? MapFromReader(reader) : null;
         }
@@ -118,6 +119,7 @@ public class EmployeeRepository(IConfiguration configuration) : ICrudRepository<
             await using var connection = new NpgsqlConnection(_connectionString);
             await using var command = new NpgsqlCommand(query, connection);
             await connection.OpenAsync();
+            command.Parameters.AddWithValue("@id", id);
             return await command.ExecuteNonQueryAsync() == 1;
         }
         catch (Exception e)

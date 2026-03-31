@@ -1,47 +1,45 @@
-using gymus_server.GymusApp.Employees.Dtos.Requests;
-using gymus_server.GymusApp.Employees.Dtos.Responses;
+using gymus_server.GymusApp.Members.Dtos.Requests;
+using gymus_server.GymusApp.Members.Dtos.Responses;
 using gymus_server.Shared.Abstractions;
 using gymus_server.Shared.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using static gymus_server.Shared.Utlis.Helpers;
 
-namespace gymus_server.GymusApp.Employees;
+namespace gymus_server.GymusApp.Members;
 
 [ApiController]
-[Route("api/employees")]
-public class EmployeeController(ICrudService<Employee, int> employeeService) : ControllerBase
+[Route("api/members")]
+public class MemberController(ICrudService<Member, int> memberService) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAll()
     {
-        var employees =
-            (await employeeService.GetAll()).ConvertAll(employee => employee.ToEntity());
-        return Ok(new ApiResponse<List<EmployeeResponseDto>>(employees));
+        var members = (await memberService.GetAll()).ConvertAll(member => member.ToResponseDto());
+        return Ok(new ApiResponse<List<MemberResponseDto>>(members));
     }
 
     [HttpGet("{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetOne([FromRoute] int id)
     {
         if (IsIdValid(id)) return BadRequest(new ApiResponse<List<string>>(["Invalid Id"]));
-        var employee = await employeeService.GetOne(id);
-        return employee == null
-            ? NotFound(new ApiResponse<List<string>>(["Failed or not found"]))
-            : Ok(new ApiResponse<EmployeeResponseDto>(employee.ToEntity()));
+
+        var member = await memberService.GetOne(id);
+        return member == null
+            ? NotFound(new ApiResponse<List<string>>(["Member not found"]))
+            : Ok(new ApiResponse<MemberResponseDto>(member.ToResponseDto()));
     }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Create(
-        [FromBody] EmployeeCreateRequestDto employeeCreateRequestDto)
+    public async Task<IActionResult> Create([FromBody] MemberCreateRequestDto memberCreateRequestDto)
     {
         if (!ModelState.IsValid)
         {
@@ -53,11 +51,11 @@ public class EmployeeController(ICrudService<Employee, int> employeeService) : C
             return BadRequest(new ApiResponse<List<string>>(errors));
         }
 
-        var newEmployee = await employeeService.Create(employeeCreateRequestDto.ToEntity());
-        return newEmployee == null
-            ? BadRequest(new ApiResponse<List<string>>(["Employee failed to save"]))
-            : CreatedAtAction("GetOne", new { id = newEmployee.Id },
-                new ApiResponse<EmployeeResponseDto>(newEmployee.ToEntity()));
+        var member = await memberService.Create(memberCreateRequestDto.ToEntity());
+        return member == null
+            ? BadRequest(new ApiResponse<List<string>>(["Member failed to save"]))
+            : CreatedAtAction(nameof(GetOne), new { id = member.Id },
+                new ApiResponse<MemberResponseDto>(member.ToResponseDto()));
     }
 
     [HttpPut("{id:int}")]
@@ -67,8 +65,7 @@ public class EmployeeController(ICrudService<Employee, int> employeeService) : C
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Update(
         [FromRoute] int id,
-        [FromBody] EmployeeUpdateRequestDto employeeUpdateRequestDto
-    )
+        [FromBody] MemberUpdateRequestDto memberUpdateRequestDto)
     {
         if (IsIdValid(id)) return BadRequest(new ApiResponse<List<string>>(["Invalid Id"]));
 
@@ -78,13 +75,14 @@ public class EmployeeController(ICrudService<Employee, int> employeeService) : C
                 .SelectMany(value => value.Errors)
                 .Select(error => error.ErrorMessage)
                 .ToList();
+
             return BadRequest(new ApiResponse<List<string>>(errors));
         }
 
-        var updatedEmployee = await employeeService.Update(employeeUpdateRequestDto.ToEntity(), id);
-        return updatedEmployee == null
-            ? NotFound(new ApiResponse<List<string>>(["Employee not found or failed to update"]))
-            : Ok(new ApiResponse<EmployeeResponseDto>(updatedEmployee.ToEntity()));
+        var updatedMember = await memberService.Update(memberUpdateRequestDto.ToEntity(), id);
+        return updatedMember == null
+            ? NotFound(new ApiResponse<List<string>>(["Member not found or failed to update"]))
+            : Ok(new ApiResponse<MemberResponseDto>(updatedMember.ToResponseDto()));
     }
 
     [HttpDelete("{id:int}")]
@@ -96,8 +94,8 @@ public class EmployeeController(ICrudService<Employee, int> employeeService) : C
     {
         if (IsIdValid(id)) return BadRequest(new ApiResponse<List<string>>(["Invalid Id"]));
 
-        return await employeeService.Delete(id)
+        return await memberService.Delete(id)
             ? NoContent()
-            : NotFound(new ApiResponse<List<string>>(["Employee not found or failed to delete"]));
+            : NotFound(new ApiResponse<List<string>>(["Member not found or failed to delete"]));
     }
 }

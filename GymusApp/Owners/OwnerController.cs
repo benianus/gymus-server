@@ -56,7 +56,7 @@ public class OwnerController(ICrudService<Owner, int> ownerService) : Controller
         var newOwner = await ownerService.Create(ownerCreateRequestDto.ToEntity());
         return newOwner == null
             ? BadRequest(new ApiResponse<List<string>>(["Owner failed to save"]))
-            : CreatedAtAction("GetOne", new { newOwner.Id }, newOwner);
+            : CreatedAtAction("GetOne", new { id = newOwner.Id }, newOwner);
     }
 
     [HttpPut("{id:int}")]
