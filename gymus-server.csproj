@@ -15,7 +15,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="GymusApp\Employees\"/>
         <Folder Include="GymusApp\Members\"/>
     </ItemGroup>
 

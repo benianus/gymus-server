@@ -2,10 +2,6 @@ namespace gymus_server.Shared.Dtos;
 
 public record ApiResponse<T>
 {
-    public T? Data { get; set; }
-    public string Status { get; set; }
-    public List<string>? Errors { get; set; }
-
     public ApiResponse(T? data)
     {
         Data = data;
@@ -19,4 +15,8 @@ public record ApiResponse<T>
         Status = "ERROR";
         Errors = errors;
     }
+
+    public T? Data { get; set; }
+    public string Status { get; set; }
+    public List<string>? Errors { get; set; }
 }

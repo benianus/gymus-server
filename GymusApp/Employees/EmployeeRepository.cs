@@ -1,39 +1,51 @@
 using gymus_server.Shared.Abstractions;
 using Npgsql;
 
-namespace gymus_server.GymusApp.Owners;
+namespace gymus_server.GymusApp.Employees;
 
-public class OwnerRepository(IConfiguration configuration) : ICrudRepository<Owner, int>
+public class EmployeeRepository(IConfiguration configuration) : ICrudRepository<Employee, int>
 {
-    private readonly string? _connectionString =
-        configuration.GetConnectionString("DefaultConnection");
+    private readonly string _connectionString =
+        configuration.GetConnectionString("DefaultConnection") ??
+        throw new InvalidOperationException();
 
-    public async Task<List<Owner>> GetAll()
+    public async Task<List<Employee>> GetAll()
     {
-        var owners = new List<Owner>();
+        var employees = new List<Employee>();
 
         try
         {
-            const string query = "SELECT * FROM owners";
+            const string query = "SELECT * FROM employees";
             await using var connection = new NpgsqlConnection(_connectionString);
             await using var command = new NpgsqlCommand(query, connection);
             await connection.OpenAsync();
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync()) owners.Add(MapFromReader(reader));
-            return owners;
+            while (await reader.ReadAsync())
+                employees.Add(
+                    new Employee
+                    {
+                        Id = (int)reader["id"],
+                        Salary = (decimal)reader["salary"],
+                        PersonId = (int)reader["person_id"],
+                        CreatedAt = (DateTime)reader["created_at"],
+                        UpdatedAt = (DateTime)reader["updated_at"]
+                    }
+                );
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            return [];
+            throw;
         }
+
+        return employees;
     }
 
-    public async Task<Owner?> GetOne(int id)
+    public async Task<Employee?> GetOne(int id)
     {
         try
         {
-            const string query = """Select * from owners where id = @id;""";
+            const string query = "SELECT * FROM employees where id = @id";
             await using var connection = new NpgsqlConnection(_connectionString);
             await using var command = new NpgsqlCommand(query, connection);
             await connection.OpenAsync();
@@ -44,44 +56,49 @@ public class OwnerRepository(IConfiguration configuration) : ICrudRepository<Own
         catch (Exception e)
         {
             Console.WriteLine(e);
-            return null;
+            throw;
         }
     }
 
-    public async Task<Owner?> Create(Owner data)
-    {
-        try
-        {
-            const string query = "insert into owners (person_id) values (@person_id) returning *;";
-            await using var connection = new NpgsqlConnection(_connectionString);
-            await using var command = new NpgsqlCommand(query, connection);
-            await connection.OpenAsync();
-            command.Parameters.AddWithValue("@person_id", data.PersonId);
-            await using var reader = await command.ExecuteReaderAsync();
-            return await reader.ReadAsync() ? MapFromReader(reader) : null;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            return null;
-        }
-    }
-
-    public async Task<Owner?> Update(Owner data, int id)
+    public async Task<Employee?> Create(Employee data)
     {
         try
         {
             const string query = """
-                                 update owners 
-                                 set person_id = @person_id,
-                                     updated_at = @updated_at
-                                 where id = @id 
+                                 insert into employees (person_id, salary)
+                                 values (@person_id, @salary)
                                  returning *;
                                  """;
             await using var connection = new NpgsqlConnection(_connectionString);
             await using var command = new NpgsqlCommand(query, connection);
             await connection.OpenAsync();
             command.Parameters.AddWithValue("@person_id", data.PersonId);
+            command.Parameters.AddWithValue("@salary", data.Salary);
+            await using var reader = await command.ExecuteReaderAsync();
+            return await reader.ReadAsync() ? MapFromReader(reader) : null;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    public async Task<Employee?> Update(Employee data, int id)
+    {
+        try
+        {
+            const string query = """
+                                 update employees 
+                                 set salary = @salary,
+                                     updated_at = @updated_at
+                                 where id = @id
+                                 returning *;
+                                 """;
+            await using var connection = new NpgsqlConnection(_connectionString);
+            await using var command = new NpgsqlCommand(query, connection);
+            await connection.OpenAsync();
+            command.Parameters.AddWithValue("@salary", data.Salary);
             command.Parameters.AddWithValue("@updated_at", data.UpdatedAt);
             await using var reader = await command.ExecuteReaderAsync();
             return await reader.ReadAsync() ? MapFromReader(reader) : null;
@@ -89,7 +106,7 @@ public class OwnerRepository(IConfiguration configuration) : ICrudRepository<Own
         catch (Exception e)
         {
             Console.WriteLine(e);
-            return null;
+            throw;
         }
     }
 
@@ -97,14 +114,10 @@ public class OwnerRepository(IConfiguration configuration) : ICrudRepository<Own
     {
         try
         {
-            const string query = """
-                                 delete from owners 
-                                 where id = @id;
-                                 """;
+            const string query = """delete from employees where id = @id;""";
             await using var connection = new NpgsqlConnection(_connectionString);
             await using var command = new NpgsqlCommand(query, connection);
             await connection.OpenAsync();
-            command.Parameters.AddWithValue("@id", id);
             return await command.ExecuteNonQueryAsync() == 1;
         }
         catch (Exception e)
@@ -114,14 +127,15 @@ public class OwnerRepository(IConfiguration configuration) : ICrudRepository<Own
         }
     }
 
-    private static Owner MapFromReader(NpgsqlDataReader reader)
+    private static Employee MapFromReader(NpgsqlDataReader reader)
     {
-        return new Owner
+        return new Employee
         {
-            Id = reader.GetInt32(reader.GetOrdinal("id")),
-            PersonId = reader.GetInt32(reader.GetOrdinal("person_id")),
-            CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at")),
-            UpdatedAt = reader.GetDateTime(reader.GetOrdinal("updated_at"))
+            Id = (int)reader["id"],
+            Salary = (decimal)reader["salary"],
+            PersonId = (int)reader["person_id"],
+            CreatedAt = (DateTime)reader["created_at"],
+            UpdatedAt = (DateTime)reader["updated_at"]
         };
     }
 }
