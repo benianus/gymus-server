@@ -1,4 +1,3 @@
-using gymus_server.GymusApp.Persons.Dtos;
 using gymus_server.GymusApp.Persons.Dtos.Requests;
 using gymus_server.GymusApp.Persons.Dtos.Responses;
 using gymus_server.GymusApp.Persons.Models;
@@ -17,6 +16,7 @@ public static class PersonMappers
             person.Phone,
             person.Address,
             person.Birthdate,
+            person.Age,
             person.CreatedBy,
             person.CreatedAt,
             person.UpdatedAt
@@ -46,7 +46,7 @@ public static class PersonMappers
             Email = person.Email,
             Phone = person.Phone,
             Address = person.Address,
-            Birthdate = person.Birthdate,
+            Birthdate = person.Birthdate
         };
     }
 }

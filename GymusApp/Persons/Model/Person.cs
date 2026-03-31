@@ -29,6 +29,13 @@ public class Person
     public string Phone { get; set; }
     public string Address { get; set; }
     public DateTime Birthdate { get; set; }
+
+    public byte Age
+    {
+        get => (byte)(DateTime.Now.Year - Birthdate.Year);
+        set;
+    }
+
     public int CreatedBy { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime UpdatedAt { get; set; } = DateTime.Now;

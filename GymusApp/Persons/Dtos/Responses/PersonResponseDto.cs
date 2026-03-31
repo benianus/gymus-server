@@ -8,6 +8,7 @@ public record PersonResponseDto(
     string Phone,
     string Address,
     DateTime Birthdate,
+    byte Age,
     int CreatedBy,
     DateTime CreatedAt,
     DateTime UpdatedAt

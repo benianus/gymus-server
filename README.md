@@ -85,6 +85,7 @@ The project currently contains modules for:
 - Members
 - Users
 - Persons
+- Attendances
 - more features are coming soon ...
 ## Useful commands
 

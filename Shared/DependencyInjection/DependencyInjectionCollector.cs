@@ -1,3 +1,6 @@
+using gymus_server.GymusApp.Attendances.Model;
+using gymus_server.GymusApp.Attendances.Repository;
+using gymus_server.GymusApp.Attendances.Service;
 using gymus_server.GymusApp.Employees;
 using gymus_server.GymusApp.Members;
 using gymus_server.GymusApp.Owners;
@@ -17,6 +20,7 @@ public static class DependencyInjectionCollector
     {
         public IServiceCollection AddApplicationServices()
         {
+            services.AddScoped<ICrudService<Attendance, int>, AttendanceService>();
             services.AddScoped<ICrudService<Person, int>, PersonService>();
             services.AddScoped<ICrudService<User, int>, UserService>();
             services.AddScoped<ICrudService<Owner, int>, OwnerService>();
@@ -27,6 +31,7 @@ public static class DependencyInjectionCollector
 
         public IServiceCollection AddRepositoryServices()
         {
+            services.AddScoped<ICrudRepository<Attendance, int>, AttendanceRepository>();
             services.AddScoped<ICrudRepository<Person, int>, PersonRepository>();
             services.AddScoped<ICrudRepository<User, int>, UserRepository>();
             services.AddScoped<ICrudRepository<Owner, int>, OwnerRepository>();
