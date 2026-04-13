@@ -1,4 +1,5 @@
 # Gymus Server (.NET)
+
 This project is a gym management system.
 
 This project is an ASP.NET Core Web API for the Gymus application.
@@ -80,13 +81,12 @@ URL to access available endpoints.
 
 The project currently contains modules for:
 
-- Owners
-- Employees
-- Members
-- Users
-- Persons
-- Attendances
-- more features are coming soon ...
+- Login & Register a User
+- Register Members & Memberships
+- Record attendances
+- Renew memberships
+- more features coming soon ...
+
 ## Useful commands
 
 Build the project:
