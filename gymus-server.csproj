@@ -15,7 +15,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="GymusApp\Members\"/>
+        <Folder Include="src\GymusApp\Reports\"/>
+        <Folder Include="src\GymusApp\Sessions\Dtos\Requests\"/>
+        <Folder Include="src\GymusApp\Sessions\Dtos\Responses\"/>
+        <Folder Include="src\GymusApp\Store\Dtos\Requests\"/>
+        <Folder Include="src\GymusApp\Store\Dtos\Responses\"/>
+        <Folder Include="src\Shared\Mappers\"/>
     </ItemGroup>
 
 </Project>
