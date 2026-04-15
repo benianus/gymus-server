@@ -7,9 +7,9 @@ namespace gymus_server.GymusApp.Memberships;
 
 [ApiController]
 [Route("api/memberships")]
-public class MembershipController(MembershipService membershipService) : ControllerBase
+public class MembershipController(IMembershipService membershipService) : ControllerBase
 {
-    [HttpPost("/member/register")]
+    [HttpPost("register")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -25,19 +25,46 @@ public class MembershipController(MembershipService membershipService) : Control
             return BadRequest(new ApiResponse<List<string>>(errors));
         }
 
-        StatusCode(StatusCodes.Status200OK, "");
-        return await membershipService.RegisterMembership(request)
-            ? Created()
-            : BadRequest(new ApiResponse<List<string>>(["Failed to register a member"]));
+        await membershipService.RegisterMembership(request);
+        return Created();
     }
 
-    [HttpPost("/{memberId}/attendance")]
+    [HttpPost("record/{memberId}/attendance")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> RecordMemberAttendance([FromRoute] int memberId)
     {
         if (IsIdValid(memberId)) return BadRequest(new ApiResponse<List<string>>(["Invalid Id"]));
-        var isChecked = await membershipService.RecordAttendance(memberId);
-        return isChecked
-            ? NoContent()
-            : BadRequest(new ApiResponse<List<string>>(["Failed to record attendance"]));
+        await membershipService.RecordAttendance(memberId);
+        return NoContent();
+    }
+
+    [HttpPost("{memberId}/renew")]
+    public async Task<IActionResult> RenewMembership(int memberId)
+    {
+        if (IsIdValid(memberId)) return BadRequest(new ApiResponse<List<string>>(["Invalid Id"]));
+        await membershipService.RenewMembership(memberId);
+        return NoContent();
+    }
+
+    [HttpGet("members")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetAllMembers()
+    {
+        var members = await membershipService.GetAllMembers();
+        return Ok(members);
+    }
+
+    [HttpGet("members/{memberId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetMemberCard(int memberId)
+    {
+        if (IsIdValid(memberId))
+            return BadRequest(new ApiResponse<List<string>>(["Invalid Id"]));
+        return Ok(await membershipService.GetMemberCard(memberId));
     }
 }

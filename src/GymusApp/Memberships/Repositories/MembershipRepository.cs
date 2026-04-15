@@ -73,16 +73,16 @@ public class MembershipRepository(IConfiguration configuration)
                                 as is_inserted;
                              """;
         await using var connection = new NpgsqlConnection(ConnectionString);
-        await using var cmd = new NpgsqlCommand(query, connection);
+        await using var command = new NpgsqlCommand(query, connection);
         await using var transaction = await connection.BeginTransactionAsync();
-        cmd.Transaction = transaction;
-        cmd.Parameters.AddWithValue("@member_id", memberId);
-        cmd.Parameters.AddWithValue("@created_by", 5);
+        command.Transaction = transaction;
+        command.Parameters.AddWithValue("@member_id", memberId);
+        command.Parameters.AddWithValue("@created_by", 5);
         try
         {
             await connection.OpenAsync();
 
-            var result = await cmd.ExecuteScalarAsync();
+            var result = await command.ExecuteScalarAsync();
 
             await transaction.CommitAsync();
 
@@ -148,7 +148,7 @@ public class MembershipRepository(IConfiguration configuration)
                                 from renew_membership(
                                 _member_id := @member_id, 
                                 _created_by := @created_by
-                                     )
+                                     ) as is_inserted;
                              """;
         await using var connection = new NpgsqlConnection(ConnectionString);
         await using var command = new NpgsqlCommand(query, connection);
@@ -158,13 +158,58 @@ public class MembershipRepository(IConfiguration configuration)
         command.Parameters.AddWithValue("@created_by", 5);
         try
         {
+            await connection.OpenAsync();
+
+            var result = await command.ExecuteScalarAsync();
+
+            await transaction.CommitAsync();
+
+            return Convert.ToInt32(result ?? -1) > 0;
         }
         catch (Exception e)
         {
+            await transaction.RollbackAsync();
             Console.WriteLine(e);
             throw;
         }
+    }
 
-        return false;
+    public async Task<MemberCardResponseDto?> GetMemberCard(int memberId)
+    {
+        const string query = """
+                                select * from get_member_card(_member_id := @member_id)
+                             """;
+
+        await using var connection = new NpgsqlConnection(ConnectionString);
+        await using var command = new NpgsqlCommand(query, connection);
+        await using var transaction = await connection.BeginTransactionAsync();
+        command.Transaction = transaction;
+        command.Parameters.AddWithValue("@member_id", memberId);
+        try
+        {
+            await connection.OpenAsync();
+
+            await using var reader = await command.ExecuteReaderAsync();
+
+            await transaction.CommitAsync();
+
+            return await reader.ReadAsync()
+                ? new MemberCardResponseDto(
+                    reader.GetInt32(reader.GetOrdinal("id")),
+                    reader.GetString(reader.GetOrdinal("first_name")),
+                    reader.GetString(reader.GetOrdinal("last_name")),
+                    reader.GetDateTime(reader.GetOrdinal("birthdate")),
+                    reader.GetDateTime(reader.GetOrdinal("join_date")),
+                    reader.GetDateTime(reader.GetOrdinal("end_date")),
+                    reader.GetString(reader.GetOrdinal("personal_photo"))
+                )
+                : null;
+        }
+        catch (Exception e)
+        {
+            await transaction.RollbackAsync();
+            Console.WriteLine(e);
+            throw;
+        }
     }
 }

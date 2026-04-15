@@ -10,15 +10,15 @@ public static class DependencyInjectionCollector
     {
         public IServiceCollection AddApplicationServices()
         {
-            services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IMembershipService, MembershipService>();
+            services.AddSingleton<IUserService, UserService>();
+            services.AddSingleton<IMembershipService, MembershipService>();
             return services;
         }
 
         public IServiceCollection AddRepositoryServices()
         {
-            services.AddScoped<UserRepository>();
-            services.AddScoped<MembershipRepository>();
+            services.AddSingleton<UserRepository>();
+            services.AddSingleton<MembershipRepository>();
             return services;
         }
     }

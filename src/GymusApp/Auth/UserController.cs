@@ -9,7 +9,7 @@ namespace gymus_server.GymusApp.Auth;
 [Route("api/auth")]
 public class UserController(IUserService userService) : ControllerBase
 {
-    [HttpPost("/login")]
+    [HttpPost("login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -29,7 +29,7 @@ public class UserController(IUserService userService) : ControllerBase
         return Ok(new ApiResponse<AuthResponseDto>(authResponse));
     }
 
-    [HttpPost("/register")]
+    [HttpPost("register")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

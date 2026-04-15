@@ -1,5 +1,7 @@
+using System.Data;
 using gymus_server.Shared.DependencyInjection;
 using gymus_server.Shared.Exceptions;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
