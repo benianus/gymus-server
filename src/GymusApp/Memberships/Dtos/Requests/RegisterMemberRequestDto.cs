@@ -12,4 +12,16 @@ public record RegisterMemberRequestDto(
     string PersonalPhoto,
     string ParentalAuthorization,
     string MembershipType
-);
+)
+{
+    public int Age
+    {
+        get
+        {
+            var todayDate = DateTime.Now;
+            var actualYearTotalDays = DateTime.IsLeapYear(todayDate.Year) ? 366 : 365;
+            var ageTotalDays = todayDate.Subtract(BirthDate).Days;
+            return ageTotalDays / actualYearTotalDays;
+        }
+    }
+}

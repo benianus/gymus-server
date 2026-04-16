@@ -37,15 +37,15 @@ public class MembershipController(IMembershipService membershipService) : Contro
     {
         if (IsIdValid(memberId)) return BadRequest(new ApiResponse<List<string>>(["Invalid Id"]));
         await membershipService.RecordAttendance(memberId);
-        return NoContent();
+        return Created();
     }
 
     [HttpPost("{memberId}/renew")]
-    public async Task<IActionResult> RenewMembership(int memberId)
+    public async Task<IActionResult> RenewMembership([FromRoute] int memberId)
     {
         if (IsIdValid(memberId)) return BadRequest(new ApiResponse<List<string>>(["Invalid Id"]));
         await membershipService.RenewMembership(memberId);
-        return NoContent();
+        return Created();
     }
 
     [HttpGet("members")]
@@ -63,8 +63,7 @@ public class MembershipController(IMembershipService membershipService) : Contro
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetMemberCard(int memberId)
     {
-        if (IsIdValid(memberId))
-            return BadRequest(new ApiResponse<List<string>>(["Invalid Id"]));
+        if (IsIdValid(memberId)) return BadRequest(new ApiResponse<List<string>>(["Invalid Id"]));
         return Ok(await membershipService.GetMemberCard(memberId));
     }
 }
