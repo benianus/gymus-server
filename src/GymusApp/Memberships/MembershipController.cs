@@ -13,19 +13,20 @@ public class MembershipController(IMembershipService membershipService) : Contro
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> RegisterMember([FromBody] RegisterMemberRequestDto request)
+    public async Task<IActionResult> RegisterMember([FromForm] RegisterMemberRequestDto request)
     {
         if (!ModelState.IsValid)
         {
             var errors = ModelState.Values
-                .SelectMany(v => v.Errors)
-                .Select(e => e.ErrorMessage)
-                .ToList();
+                                   .SelectMany(v => v.Errors)
+                                   .Select(e => e.ErrorMessage)
+                                   .ToList();
 
             return BadRequest(new ApiResponse<List<string>>(errors));
         }
 
         await membershipService.RegisterMembership(request);
+
         return Created();
     }
 

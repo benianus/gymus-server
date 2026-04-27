@@ -9,7 +9,7 @@ public class MembershipRepository(IConfiguration configuration)
 {
     private string ConnectionString =>
         configuration.GetConnectionString("DefaultConnection")
-        ?? throw new Exception("No connection string found");
+     ?? throw new Exception("No connection string found");
 
     public async Task<bool> RegisterMember(RegisterMemberRequestDto dto)
     {

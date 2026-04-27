@@ -1,10 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\GymusApp",
-    "\\GymusApp\\Users",
-    "\\GymusApp\\Users\\Controller"
+    "\\src",
+    "\\src\\GymusApp",
+    "\\src\\GymusApp\\Auth"
   ],
-  "SelectedNode": "\\GymusApp\\Users\\Controller\\UserController.cs",
   "PreviewInSolutionExplorer": false
 }

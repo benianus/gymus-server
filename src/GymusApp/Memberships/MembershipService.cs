@@ -15,16 +15,16 @@ public class MembershipService(MembershipRepository membershipRepository) : IMem
     public async Task<MemberCardResponseDto> GetMemberCard(int memberId)
     {
         return await membershipRepository.GetMemberCard(memberId)
-               ?? throw new NotFoundException("member card not found");
+            ?? throw new NotFoundException("member card not found");
     }
 
-    public async Task<bool> RegisterMembership(RegisterMemberRequestDto registerMemberRequestDto)
+    public async Task<bool> RegisterMembership(RegisterMemberRequestDto dto)
     {
-        if (registerMemberRequestDto.Age < 18
-            && registerMemberRequestDto.ParentalAuthorization == null)
+        if (dto.Age < 18
+         && dto.ParentalAuthorization == null)
             throw new Exception("miss of parental authorization or you're less than 18 years old");
 
-        return await membershipRepository.RegisterMember(registerMemberRequestDto)
+        return await membershipRepository.RegisterMember(dto)
             ? true
             : throw new Exception("member failed to register");
     }

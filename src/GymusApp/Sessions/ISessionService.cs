@@ -1,7 +1,10 @@
+using gymus_server.GymusApp.Sessions.Dtos.Requests;
+using gymus_server.GymusApp.Sessions.Dtos.Responses;
+
 namespace gymus_server.GymusApp.Sessions;
 
 public interface ISessionService
 {
-    Task ViewSessions();
-    Task RegisterSession();
+    Task<List<SessionResponseDto>> ViewSessions();
+    Task RegisterSession(SessionRegisterRequestDto session);
 }
