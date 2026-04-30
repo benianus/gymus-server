@@ -79,13 +79,38 @@ URL to access available endpoints.
 
 ## Main features in this API
 
-The project currently contains modules for:
+### Users:
 
-- Login & Register a User
-- Register Members & Memberships
-- Record attendances
-- Renew memberships
-- more features coming soon ...
+- [x] Login
+- [x] Register
+
+### Members:
+
+- [x] Register Memberships
+- [x] Record attendances
+- [x] Renew memberships
+- [x] Get all members
+- [x] Get member card
+
+### Sessions:
+
+- [x] Get all sessions
+- [x] Register a session
+
+### Store:
+
+- [x] Get all products
+- [x] Get product
+- [x] Add new product
+- [x] Register new sale
+
+### Reports:
+
+- [ ] Total sales
+- [ ] Total revenue
+- [ ] Monthly revenue
+- [ ] Monthly sales
+- [ ] Total subscriptions
 
 ## Useful commands
 

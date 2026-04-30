@@ -58,32 +58,33 @@ create table memberships
 
 create table members_cards
 (
-    id            int not null primary key generated always as identity,
-    member_id     int not null references members (id) unique,
-    membership_id int not null references memberships (id) unique,
-    created_by    int not null references users (id),
-    created_at    timestamp(2) default current_timestamp(2),
-    updated_at    timestamp(2) default current_timestamp(2)
+    id            int  not null primary key generated always as identity,
+    join_date     date not null default current_date,
+    member_id     int  not null references members (id) unique,
+    membership_id int  not null references memberships (id) unique,
+    created_by    int  not null references users (id),
+    created_at    timestamp(2)  default current_timestamp(2),
+    updated_at    timestamp(2)  default current_timestamp(2)
 );
 
 create table membership_renewals
 (
-    id            int not null primary key generated always as identity,
-    start_date    date         default current_date,
-    end_date      date         default (current_date + 30),
-    membership_id int not null references memberships (id),
-    created_by    int not null references users (id),
-    created_at    timestamp(2) default current_timestamp(2),
-    updated_at    timestamp(2) default current_timestamp(2)
+    id            int  not null primary key generated always as identity,
+    renewed_date  date not null default current_date,
+    membership_id int  not null references memberships (id),
+    created_by    int  not null references users (id),
+    created_at    timestamp(2)  default current_timestamp(2),
+    updated_at    timestamp(2)  default current_timestamp(2)
 );
 
 create table member_attendances
 (
-    id         int not null primary key generated always as identity,
-    member_id  int not null references members (id),
-    created_by int not null references users (id),
-    created_at timestamp(2) default current_timestamp(2),
-    updated_at timestamp(2) default current_timestamp(2)
+    id           int  not null primary key generated always as identity,
+    checked_date date not null default current_date,
+    member_id    int  not null references members (id),
+    created_by   int  not null references users (id),
+    created_at   timestamp(2)  default current_timestamp(2),
+    updated_at   timestamp(2)  default current_timestamp(2)
 );
 
 create table session_types
@@ -107,13 +108,15 @@ create table sessions
 
 create table products
 (
-    id           int          not null primary key generated always as identity,
-    product_name varchar(255) not null,
-    quantity     int          not null,
-    price        numeric      not null,
-    added_by     int          not null references users (id),
-    created_at   timestamp(2) default current_timestamp(2),
-    updated_at   timestamp(2) default current_timestamp(2)
+    id                  int          not null primary key generated always as identity,
+    product_name        varchar(255) not null,
+    product_image       text         not null,
+    product_description text         not null,
+    quantity            int          not null,
+    price               numeric      not null,
+    added_by            int          not null references users (id),
+    created_at          timestamp(2) default current_timestamp(2),
+    updated_at          timestamp(2) default current_timestamp(2)
 );
 
 create table sales
