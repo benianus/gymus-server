@@ -7,7 +7,7 @@ public interface IMembershipService
 {
     Task<List<MembersResponseDto>> GetAllMembers(int page, int pageSize);
     Task<MemberCardResponseDto> GetMemberCard(int memberId);
-    Task<bool> RegisterMembership(RegisterMemberRequestDto dto);
-    Task<bool> RecordAttendance(int memberId);
-    Task<bool> RenewMembership(int memberId);
+    Task RegisterMembership(RegisterMemberRequestDto dto);
+    Task RecordAttendance(int memberId);
+    Task RenewMembership(int memberId);
 }

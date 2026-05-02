@@ -21,7 +21,7 @@ public class MembershipService(MembershipRepository membershipRepository) : IMem
             ?? throw new NotFoundException("member card not found");
     }
 
-    public async Task<bool> RegisterMembership(RegisterMemberRequestDto dto)
+    public async Task RegisterMembership(RegisterMemberRequestDto dto)
     {
         if (dto.Age < 18
          && dto.ParentalAuthorization == null)
@@ -29,23 +29,22 @@ public class MembershipService(MembershipRepository membershipRepository) : IMem
 
         var files = await UploadFiles(dto);
 
-        return await membershipRepository.RegisterMember(dto.ToEntity(files))
-            ? true
-            : throw new Exception("member failed to register");
+        if (await membershipRepository.RegisterMember(dto.ToEntity(files)) < 0)
+            throw new Exception("member failed to register");
     }
 
-    public async Task<bool> RecordAttendance(int memberId)
+    public async Task RecordAttendance(int memberId)
     {
-        return await membershipRepository.RecordAttendance(memberId)
-            ? true
-            : throw new Exception("member already checked today or attendance failed to saved");
+        if (await membershipRepository.RecordAttendance(memberId) < 0)
+            throw new Exception(
+                "member failed to record attendance, or member already checked in today"
+            );
     }
 
-    public async Task<bool> RenewMembership(int memberId)
+    public async Task RenewMembership(int memberId)
     {
-        return await membershipRepository.RenewMembership(memberId)
-            ? true
-            : throw new Exception("membership failed to renew or Subscription is not over yet");
+        if (await membershipRepository.RenewMembership(memberId) < 0)
+            throw new Exception("membership failed to renew or Subscription is not over yet");
     }
 
     private async Task<Dictionary<string, string?>> UploadFiles(RegisterMemberRequestDto dto)
@@ -59,15 +58,15 @@ public class MembershipService(MembershipRepository membershipRepository) : IMem
         {
             {
                 "birthCertificate",
-                birthCertificate ?? throw new Exception("birthCertificate should not be empty")
+                birthCertificate ?? throw new Exception("birthCertificate should not be null")
             },
             {
                 "medicalCertificate",
-                medicalCertificate ?? throw new Exception("medicalCertificate should not be empty")
+                medicalCertificate ?? throw new Exception("medicalCertificate should not be null")
             },
             {
                 "personalPhoto",
-                personalPhoto ?? throw new Exception("personalPhoto should not empty")
+                personalPhoto ?? throw new Exception("personalPhoto should not null")
             },
             { "parentalAuthorization", parentalAuthorization }
         };

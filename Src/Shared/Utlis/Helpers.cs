@@ -38,12 +38,22 @@ public static class Helpers
         var fileName = $"{Guid.NewGuid()}{fileExtension}";
         var filePath = Path.Combine(uploadFolder, fileName);
 
-        await using (var stream = new FileStream(filePath, FileMode.Create))
-        {
-            await file.CopyToAsync(stream);
-        }
+        var stream = new FileStream(filePath, FileMode.Create);
+        await file.CopyToAsync(stream);
+        await stream.DisposeAsync();
+        stream.Close();
 
         var relativePath = Path.Combine("/Uploads/", fileName);
         return relativePath;
+    }
+
+    public static void DeleteFiles(string filePath)
+    {
+        var path = Path.Combine(
+            Directory.GetCurrentDirectory(),
+            "wwwroot",
+            filePath.TrimStart('/', '\\')
+        );
+        if (File.Exists(path)) File.Delete(path);
     }
 }

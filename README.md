@@ -106,11 +106,31 @@ URL to access available endpoints.
 
 ### Reports:
 
-- [ ] Total sales
-- [ ] Total revenue
-- [ ] Monthly revenue
-- [ ] Monthly sales
-- [ ] Total subscriptions
+#### Sales:
+
+1. [ ] Total sales (memberships, sessions & store)
+2. [ ] Monthly sales (memberships, sessions & store)
+3. [ ] Total store sales
+4. [ ] Monthly store sales
+5. [ ] Total sessions
+6. [ ] Monthly sessions
+7. [ ] Total memberships
+8. [ ] Total active memberships
+9. [ ] Monthly memberships
+10. [ ] Monthly active memberships
+
+#### Revenue:
+
+1. [ ] Total revenue (memberships, sessions & store)
+2. [ ] Monthly revenue (memberships, sessions & store)
+3. [ ] Total store revenue
+4. [ ] Monthly store revenue
+5. [ ] Total sessions revenue
+6. [ ] Monthly sessions revenue
+7. [ ] Total memberships revenue
+8. [ ] Monthly memberships revenue
+9. [ ] Total active memberships revenue
+10. [ ] Monthly active memberships revenue
 
 ## Useful commands
 

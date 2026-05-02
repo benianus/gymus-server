@@ -27,8 +27,9 @@ public class SessionRepository(IConfiguration configuration)
                              """;
         await using var connection = new NpgsqlConnection(ConnectionString);
         DefaultTypeMap.MatchNamesWithUnderscores = true;
-        var sessions = connection.Query<SessionResponseDto>(query, new { pageSize, page }).ToList();
-        return sessions;
+        var sessions =
+            await connection.QueryAsync<SessionResponseDto>(query, new { pageSize, page });
+        return sessions.ToList();
     }
 
     public async Task<int> RegisterSession(SessionRegisterRequestDto session)
@@ -43,7 +44,7 @@ public class SessionRepository(IConfiguration configuration)
                              """;
         await using var connection = new NpgsqlConnection(ConnectionString);
         DefaultTypeMap.MatchNamesWithUnderscores = true;
-        var insertedId = connection.ExecuteScalar<int>(
+        var insertedId = await connection.ExecuteScalarAsync<int>(
             query,
             new
             {

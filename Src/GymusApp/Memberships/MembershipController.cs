@@ -14,7 +14,7 @@ public class MembershipController(IMembershipService membershipService) : Contro
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> RegisterMember([FromForm] RegisterMemberRequestDto request)
+    public async Task<IActionResult> RegisterMember([FromForm] RegisterMemberRequestDto dto)
     {
         if (!ModelState.IsValid)
         {
@@ -26,7 +26,7 @@ public class MembershipController(IMembershipService membershipService) : Contro
             return BadRequest(new ApiResponse<List<string>>(errors));
         }
 
-        await membershipService.RegisterMembership(request);
+        await membershipService.RegisterMembership(dto);
 
         return Created();
     }

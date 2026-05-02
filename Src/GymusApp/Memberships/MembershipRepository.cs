@@ -1,7 +1,9 @@
+using Dapper;
 using gymus_server.GymusApp.Memberships.Dtos.Responses;
 using gymus_server.GymusApp.Memberships.Models;
 using Npgsql;
 using NpgsqlTypes;
+using static gymus_server.Shared.Utlis.Helpers;
 
 namespace gymus_server.GymusApp.Memberships.Repositories;
 
@@ -11,104 +13,82 @@ public class MembershipRepository(IConfiguration configuration)
         configuration.GetConnectionString("DefaultConnection")
      ?? throw new Exception("No connection string found");
 
-    public async Task<bool> RegisterMember(RegisterMember dto)
+    public async Task<int> RegisterMember(RegisterMember dto)
     {
+        var insertedId = 0;
         const string query = """"
-                             select * from register_member(
-                                         _first_name := @first_name,
-                                         _last_name := @last_name, 
-                                         _email := @email, 
-                                         _phone_number := @phone_number, 
-                                         _address := @address, 
-                                         _birthdate := @birthdate, 
-                                         _medical_certificate := @medical_certificate, 
-                                         _birth_certificate := @birth_certificate, 
-                                         _personal_photo := @personal_photo, 
-                                         _parental_authorization := @parental_authorization, 
-                                         _membership_type := @membership_type, 
-                                         _created_by := @created_by
-                             );
+                             select * from register_new_member(_first_name := @FirstName, 
+                             _last_name := @LastName, _email := @Email, _phone_number := @PhoneNumber,
+                             _address := @Address, _birthdate := @Birthdate::date,
+                             _medical_certificate := @MedicalCertificate,
+                             _birth_certificate := @BirthCertificate, _personal_photo := @PersonalPhoto,
+                             _membership_type := @MembershipType, _created_by := @CreatedBy,
+                             _parental_authorization := @ParentalAuthorization)
                              """";
         await using var connection = new NpgsqlConnection(ConnectionString);
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.Add("@first_name", NpgsqlDbType.Varchar).Value = dto.FirstName;
-        command.Parameters.Add("@last_name", NpgsqlDbType.Varchar).Value = dto.LastName;
-        command.Parameters.Add("@email", NpgsqlDbType.Varchar).Value = dto.Email;
-        command.Parameters.Add("@phone_number", NpgsqlDbType.Varchar).Value = dto.PhoneNumber;
-        command.Parameters.Add("@address", NpgsqlDbType.Text).Value = dto.Address;
-        command.Parameters.Add("@birthdate", NpgsqlDbType.Date).Value = dto.BirthDate;
-        command.Parameters.Add("@medical_certificate", NpgsqlDbType.Text).Value =
-            dto.MedicalCertificate;
-        command.Parameters.Add("@birth_certificate", NpgsqlDbType.Text).Value =
-            dto.BirthCertificate;
-        command.Parameters.Add("@personal_photo", NpgsqlDbType.Text).Value = dto.PersonalPhoto;
-        command.Parameters.Add("@parental_authorization", NpgsqlDbType.Text).Value =
-            dto.ParentalAuthorization;
-        command.Parameters.Add("@membership_type", NpgsqlDbType.Varchar).Value = dto.MembershipType;
-        command.Parameters.Add("@created_by", NpgsqlDbType.Integer).Value = 5;
+
+        var parameters = new
+        {
+            dto.FirstName,
+            dto.LastName,
+            dto.Email,
+            dto.PhoneNumber,
+            dto.Address,
+            dto.BirthDate,
+            dto.PersonalPhoto,
+            dto.BirthCertificate,
+            dto.MedicalCertificate,
+            dto.ParentalAuthorization,
+            dto.MembershipType,
+            CreatedBy = 5
+        };
+
         try
         {
-            await connection.OpenAsync();
-
-            var result = await command.ExecuteScalarAsync();
-
-            return Convert.ToInt32(result ?? -1) > 0;
+            insertedId = await connection.ExecuteScalarAsync<int>(query, parameters);
         }
         catch (Exception e)
         {
             Console.WriteLine(e.Message);
+            DeleteFiles(dto.BirthCertificate);
+            DeleteFiles(dto.MedicalCertificate);
+            DeleteFiles(dto.PersonalPhoto);
+            if (dto.ParentalAuthorization != null) DeleteFiles(dto.ParentalAuthorization);
+
             throw;
         }
+
+        return insertedId;
     }
 
-    public async Task<bool> RecordAttendance(int memberId)
+    public async Task<int> RecordAttendance(int memberId)
     {
         const string query = """
                                 select *
-                                from record_attendance(_member_id := @member_id,_created_by := @created_by);
+                                from record_attendance(_member_id := @memberId,_created_by := @createdBy);
                              """;
         await using var connection = new NpgsqlConnection(ConnectionString);
         await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.Add("@member_id", NpgsqlDbType.Integer).Value = memberId;
-        command.Parameters.Add("@created_by", NpgsqlDbType.Integer).Value = 5;
-        try
-        {
-            await connection.OpenAsync();
-
-            var result = await command.ExecuteScalarAsync();
-
-            return Convert.ToInt32(result ?? -1) > 0;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            throw;
-        }
+        var insertedId = await connection.ExecuteScalarAsync<int>(
+            query,
+            new { memberId, createdBy = 5 }
+        );
+        return insertedId;
     }
 
-    public async Task<bool> RenewMembership(int memberId)
+    public async Task<int> RenewMembership(int memberId)
     {
         const string query = """
                                 select * 
-                                from renew_membership(_member_id := @member_id,_created_by := @created_by);
+                                from renew_membership(_member_id := @memberId,_created_by := @createdBy);
                              """;
         await using var connection = new NpgsqlConnection(ConnectionString);
         await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.Add("@member_id", NpgsqlDbType.Integer).Value = memberId;
-        command.Parameters.Add("@created_by", NpgsqlDbType.Integer).Value = 5;
-        try
-        {
-            await connection.OpenAsync();
-
-            var result = await command.ExecuteScalarAsync();
-
-            return Convert.ToInt32(result ?? -1) > 0;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
+        var insertedId = await connection.ExecuteScalarAsync<int>(
+            query,
+            new { memberId, createdBy = 5 }
+        );
+        return insertedId;
     }
 
     public async Task<List<MembersResponseDto>> GetAllMembers(int page, int pageSize)
