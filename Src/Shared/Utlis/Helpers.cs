@@ -47,7 +47,7 @@ public static class Helpers
         return relativePath;
     }
 
-    public static void DeleteFiles(string filePath)
+    public static void DeleteFile(string filePath)
     {
         var path = Path.Combine(
             Directory.GetCurrentDirectory(),

@@ -50,10 +50,10 @@ public class MembershipRepository(IConfiguration configuration)
         catch (Exception e)
         {
             Console.WriteLine(e.Message);
-            DeleteFiles(dto.BirthCertificate);
-            DeleteFiles(dto.MedicalCertificate);
-            DeleteFiles(dto.PersonalPhoto);
-            if (dto.ParentalAuthorization != null) DeleteFiles(dto.ParentalAuthorization);
+            DeleteFile(dto.BirthCertificate);
+            DeleteFile(dto.MedicalCertificate);
+            DeleteFile(dto.PersonalPhoto);
+            if (dto.ParentalAuthorization != null) DeleteFile(dto.ParentalAuthorization);
 
             throw;
         }

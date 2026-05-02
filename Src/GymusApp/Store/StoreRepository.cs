@@ -3,6 +3,7 @@ using gymus_server.GymusApp.Store.Dtos.Requests;
 using gymus_server.GymusApp.Store.Dtos.Responses;
 using gymus_server.GymusApp.Store.Models;
 using Npgsql;
+using static gymus_server.Shared.Utlis.Helpers;
 
 namespace gymus_server.GymusApp.Store;
 
@@ -60,6 +61,7 @@ public class StoreRepository(IConfiguration configuration)
 
     public async Task<int> AddNewProduct(Product dto)
     {
+        var insertedId = -1;
         const string query = """
                                 insert into products (product_name, quantity, price, added_by, product_image, product_description) 
                                 values (@productName, @quantity, @price, @addedBy, @productImage, @productDescription)
@@ -67,18 +69,28 @@ public class StoreRepository(IConfiguration configuration)
                              """;
         await using var connection = new NpgsqlConnection(ConnectionString);
         DefaultTypeMap.MatchNamesWithUnderscores = true;
-        var insertedId = connection.ExecuteScalar<int>(
-            query,
-            new
-            {
-                productName = dto.ProductName,
-                quantity = dto.Quantity,
-                price = dto.Price,
-                addedBy = 5,
-                productImage = dto.ProductImage,
-                productDescription = dto.ProductDescription
-            }
-        );
+        try
+        {
+            insertedId = connection.ExecuteScalar<int>(
+                query,
+                new
+                {
+                    productName = dto.ProductName,
+                    quantity = dto.Quantity,
+                    price = dto.Price,
+                    addedBy = 5,
+                    productImage = dto.ProductImage,
+                    productDescription = dto.ProductDescription
+                }
+            );
+        }
+        catch (Exception e)
+        {
+            DeleteFile(dto.ProductImage);
+            Console.WriteLine(e.Message);
+            throw;
+        }
+
         return insertedId;
     }
 
