@@ -18,7 +18,6 @@
     <ItemGroup>
         <Folder Include="Src\GymusApp\Reports\Dtos\Requests\"/>
         <Folder Include="Src\GymusApp\Reports\Dtos\Responses\"/>
-        <Folder Include="Src\Shared\Mappers\"/>
         <Folder Include="wwwroot\Uploads\"/>
     </ItemGroup>
 
