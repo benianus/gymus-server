@@ -7,4 +7,3 @@ appsettings.json
 appsettings.Development.json
 gymus-server.http
 /wwwroot
-/.vs
