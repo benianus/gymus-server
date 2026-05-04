@@ -112,12 +112,12 @@ URL to access available endpoints.
 2. [x] Monthly sales (memberships, sessions & store)
 3. [x] Total store sales
 4. [x] Monthly store sales
-5. [ ] Total sessions sales
-6. [ ] Monthly sessions sales
-7. [ ] Total memberships sales
-8. [ ] Total active memberships sales
-9. [ ] Monthly memberships sales
-10. [ ] Monthly active memberships sales
+5. [x] Total sessions sales
+6. [x] Monthly sessions sales
+7. [x] Total memberships sales
+8. [x] Total active memberships sales
+9. [x] Monthly memberships sales
+10. [x] Monthly active memberships sales
 
 #### Revenue:
 

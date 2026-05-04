@@ -31,4 +31,46 @@ public class ReportsRepository(IDbConnectionFactory connection) {
                              """;
         return await connection.CreateConnection().ExecuteScalarAsync<int>(query);
     }
+
+    public async Task<int> TotalSessions() {
+        const string query = """
+                             select * from get_total_sessions_sales();
+                             """;
+        return await connection.CreateConnection().ExecuteScalarAsync<int>(query);
+    }
+
+    public async Task<int> MonthlySessions() {
+        const string query = """
+                             select * from get_monthly_sessions_sales();
+                             """;
+        return await connection.CreateConnection().ExecuteScalarAsync<int>(query);
+    }
+
+    public async Task<int> TotalMemberships() {
+        const string query = """
+                             select * from get_total_memberships_sales();
+                             """;
+        return await connection.CreateConnection().ExecuteScalarAsync<int>(query);
+    }
+
+    public async Task<int> MonthlyMemberships() {
+        const string query = """
+                             select * from get_monthly_memberships_sales();
+                             """;
+        return await connection.CreateConnection().ExecuteScalarAsync<int>(query);
+    }
+
+    public async Task<int> TotalActiveMemberships() {
+        const string query = """
+                             select * from get_total_active_memberships_sales();
+                             """;
+        return await connection.CreateConnection().ExecuteScalarAsync<int>(query);
+    }
+
+    public async Task<int> MonthlyActiveMemberships() {
+        const string query = """
+                             select * from get_monthly_active_memberships_sales();
+                             """;
+        return await connection.CreateConnection().ExecuteScalarAsync<int>(query);
+    }
 }

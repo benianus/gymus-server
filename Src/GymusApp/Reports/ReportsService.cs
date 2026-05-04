@@ -30,15 +30,17 @@ public class ReportsService(ReportsRepository reportsRepository)
 
     public async Task<int> MonthlyStoreSales() => await reportsRepository.MonthlyStoreSales();
 
-    public Task<int> TotalSessions() => throw new NotImplementedException();
+    public async Task<int> TotalSessions() => await reportsRepository.TotalSessions();
 
-    public Task<int> MonthlySessions() => throw new NotImplementedException();
+    public async Task<int> MonthlySessions() => await reportsRepository.MonthlySessions();
 
-    public Task<int> TotalMemberships() => throw new NotImplementedException();
+    public async Task<int> TotalMemberships() => await reportsRepository.TotalMemberships();
 
-    public Task<int> MonthlyMemberships() => throw new NotImplementedException();
+    public async Task<int> MonthlyMemberships() => await reportsRepository.MonthlyMemberships();
 
-    public Task<int> TotalActiveMemberships() => throw new NotImplementedException();
+    public async Task<int> TotalActiveMemberships() =>
+        await reportsRepository.TotalActiveMemberships();
 
-    public Task<int> MonthlyActiveMemberships() => throw new NotImplementedException();
+    public async Task<int> MonthlyActiveMemberships() =>
+        await reportsRepository.MonthlyActiveMemberships();
 }

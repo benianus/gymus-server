@@ -24,4 +24,34 @@ public class ReportsController(
     [HttpGet("monthly-store-sales")]
     public async Task<IActionResult> GetMonthlyStoreSales() =>
         Ok(new ApiResponse<int>(await salesReportsService.MonthlyStoreSales()));
+
+    [HttpGet("total-sessions-sales")]
+    public async Task<IActionResult> GetTotalSessions() => Ok(
+        new ApiResponse<int>(await salesReportsService.TotalSessions())
+    );
+
+    [HttpGet("monthly-sessions-sales")]
+    public async Task<IActionResult> GetMonthlySessions() => Ok(
+        new ApiResponse<int>(await salesReportsService.MonthlySessions())
+    );
+
+    [HttpGet("total-memberships-sales")]
+    public async Task<IActionResult> GetTotalMemberships() => Ok(
+        new ApiResponse<int>(await salesReportsService.TotalMemberships())
+    );
+
+    [HttpGet("monthly-memberships-sales")]
+    public async Task<IActionResult> GetMonthlyMemberships() => Ok(
+        new ApiResponse<int>(await salesReportsService.MonthlyMemberships())
+    );
+
+    [HttpGet("total-active-memberships-sales")]
+    public async Task<IActionResult> GetTotalActiveMemberships() => Ok(
+        new ApiResponse<int>(await salesReportsService.TotalActiveMemberships())
+    );
+
+    [HttpGet("monthly-active-memberships-sales")]
+    public async Task<IActionResult> GetMonthlyActiveMemberships() => Ok(
+        new ApiResponse<int>(await salesReportsService.MonthlyActiveMemberships())
+    );
 }
