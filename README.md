@@ -108,16 +108,16 @@ URL to access available endpoints.
 
 #### Sales:
 
-1. [ ] Total sales (memberships, sessions & store)
-2. [ ] Monthly sales (memberships, sessions & store)
-3. [ ] Total store sales
-4. [ ] Monthly store sales
-5. [ ] Total sessions
-6. [ ] Monthly sessions
-7. [ ] Total memberships
-8. [ ] Total active memberships
-9. [ ] Monthly memberships
-10. [ ] Monthly active memberships
+1. [x] Total sales (memberships, sessions & store)
+2. [x] Monthly sales (memberships, sessions & store)
+3. [x] Total store sales
+4. [x] Monthly store sales
+5. [ ] Total sessions sales
+6. [ ] Monthly sessions sales
+7. [ ] Total memberships sales
+8. [ ] Total active memberships sales
+9. [ ] Monthly memberships sales
+10. [ ] Monthly active memberships sales
 
 #### Revenue:
 
@@ -131,6 +131,12 @@ URL to access available endpoints.
 8. [ ] Monthly memberships revenue
 9. [ ] Total active memberships revenue
 10. [ ] Monthly active memberships revenue
+
+#### Range Statistics:
+
+1. [ ] FromMonthToMonth
+2. [ ] FromDayToDay
+3. [ ] FromYearToYear
 
 ## Useful commands
 
