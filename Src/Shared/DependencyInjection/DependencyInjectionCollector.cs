@@ -15,10 +15,10 @@ public static class DependencyInjectionCollector {
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IMembershipService, MembershipService>();
             services.AddSingleton<ISessionService, SessionService>();
-            services.AddSingleton<ISalesReportsService, ReportsService>();
+            services.AddSingleton<ISalesReportsService, SalesReportsService>();
             services.AddSingleton<IStoreService, StoreService>();
-            services.AddSingleton<IRevenueReportsService, ReportsService>();
-            services.AddSingleton<ISalesReportsService, ReportsService>();
+            services.AddSingleton<IRevenueReportsService, RevenueReportsService>();
+            services.AddSingleton<ISalesReportsService, SalesReportsService>();
             services.AddSingleton<IDbConnectionFactory, NpgSqlConnectionFactory>();
             return services;
         }
@@ -27,8 +27,9 @@ public static class DependencyInjectionCollector {
             services.AddSingleton<UserRepository>();
             services.AddSingleton<MembershipRepository>();
             services.AddSingleton<SessionRepository>();
-            services.AddSingleton<ReportsRepository>();
             services.AddSingleton<StoreRepository>();
+            services.AddSingleton<SalesReportsRepository>();
+            services.AddSingleton<RevenueReportsRepository>();
             return services;
         }
     }

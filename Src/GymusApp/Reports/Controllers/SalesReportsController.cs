@@ -5,10 +5,7 @@ namespace gymus_server.GymusApp.Reports;
 
 [ApiController]
 [Route("api/reports")]
-public class ReportsController(
-    ISalesReportsService salesReportsService,
-    IRevenueReportsService revenueReportsService
-) : ControllerBase {
+public class SalesReportsController(ISalesReportsService salesReportsService) : ControllerBase {
     [HttpGet("total-sales")]
     public async Task<IActionResult> GetTotalSales() =>
         Ok(new ApiResponse<int>(await salesReportsService.TotalSales()));

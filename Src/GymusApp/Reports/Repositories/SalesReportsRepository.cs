@@ -3,7 +3,7 @@ using gymus_server.Shared.Infrastructures;
 
 namespace gymus_server.GymusApp.Reports;
 
-public class ReportsRepository(IDbConnectionFactory connection) {
+public class SalesReportsRepository(IDbConnectionFactory connection) {
     public async Task<int> TotalSales() {
         const string query = """
                                 select total_sales from get_total_sales() as total_sales

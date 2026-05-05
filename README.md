@@ -121,16 +121,16 @@ URL to access available endpoints.
 
 #### Revenue:
 
-1. [ ] Total revenue (memberships, sessions & store)
-2. [ ] Monthly revenue (memberships, sessions & store)
-3. [ ] Total store revenue
-4. [ ] Monthly store revenue
-5. [ ] Total sessions revenue
-6. [ ] Monthly sessions revenue
-7. [ ] Total memberships revenue
-8. [ ] Monthly memberships revenue
-9. [ ] Total active memberships revenue
-10. [ ] Monthly active memberships revenue
+1. [x] Total revenue (memberships, sessions & store)
+2. [x] Monthly revenue (memberships, sessions & store)
+3. [x] Total store revenue
+4. [x] Monthly store revenue
+5. [x] Total sessions revenue
+6. [x] Monthly sessions revenue
+7. [x] Total memberships revenue
+8. [x] Monthly memberships revenue
+9. [x] Total active memberships revenue
+10. [x] Monthly active memberships revenue
 
 #### Range Statistics:
 
