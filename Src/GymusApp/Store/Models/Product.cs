@@ -1,7 +1,6 @@
 namespace gymus_server.GymusApp.Store.Models;
 
-public class Product
-{
+public class Product {
     public int Id { get; set; }
     public string ProductName { get; set; }
     public string ProductDescription { get; set; }
@@ -11,4 +10,5 @@ public class Product
     public int AddedBy { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
+    public long TotalItems { get; set; }
 }

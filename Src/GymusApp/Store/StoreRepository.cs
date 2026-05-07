@@ -1,6 +1,7 @@
 using Dapper;
 using gymus_server.GymusApp.Store.Dtos.Requests;
 using gymus_server.GymusApp.Store.Dtos.Responses;
+using gymus_server.GymusApp.Store.Mappers;
 using gymus_server.GymusApp.Store.Models;
 using gymus_server.Shared.Dtos;
 using Npgsql;
@@ -21,12 +22,14 @@ public class StoreRepository(IConfiguration configuration) {
                              select
                                  id,
                                  product_name,
+                                 product_description,
+                                 product_image,
                                  quantity,
                                  price,
-                                 product_image,
-                                 product_description,
+                                 added_by,
                                  created_at,
-                                 updated_at
+                                 updated_at,
+                                 count(products.id) over () as total_items
                              from products
                              order by id desc
                              limit @pageSize
@@ -34,12 +37,14 @@ public class StoreRepository(IConfiguration configuration) {
                              """;
         await using var connection = new NpgsqlConnection(ConnectionString);
         DefaultTypeMap.MatchNamesWithUnderscores = true;
-        var totalItems = await connection.ExecuteScalarAsync<int>("select count(*) from products");
-        var products = await connection.QueryAsync<ProductResponseDto>(
+        var result = await connection.QueryAsync<Product>(
             query,
             new { page, pageSize }
         );
-        var pagedResponse = ToPagedResponse(page, pageSize, totalItems, products.ToList());
+        var products = result.Select(product => product.ToDto()).ToList();
+        var totalItems = result.FirstOrDefault().TotalItems;
+        var pagedResponse = ToPagedResponse(page, pageSize, totalItems, products);
+        
         return pagedResponse;
     }
 

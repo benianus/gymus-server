@@ -97,20 +97,7 @@ public class MembershipRepository(IConfiguration configuration) {
         await using var connection = new NpgsqlConnection(ConnectionString);
         DefaultTypeMap.MatchNamesWithUnderscores = true;
         var result = await connection.QueryAsync<Member>(query, new { page, pageSize });
-        var members = result.Select(member => new MembersResponseDto(
-                                        member.Id,
-                                        member.FirstName,
-                                        member.LastName,
-                                        member.Email,
-                                        member.PhoneNumber,
-                                        member.Address,
-                                        member.Birthdate.Date,
-                                        member.PersonalPhoto,
-                                        member.EndDate.Date > DateTime.Now.Date,
-                                        member.CreatedAt,
-                                        member.UpdatedAt
-                                    )
-                             )
+        var members = result.Select(member => member.ToDto())
                             .ToList();
         var totalItems = result.First().TotalItems;
 

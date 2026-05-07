@@ -21,19 +21,25 @@ public class SessionRepository(IConfiguration configuration) {
                                  sessions.id ,
                                  sessions.full_name ,
                                  session_types.name as session_type_name ,
-                                 sessions.created_at 
+                                 sessions.created_at ,
+                                 count(sessions.id) over() as total_items
                              from sessions
                              join session_types
                              on sessions.session_type_id = session_types.id
                              order by sessions.id desc
                              limit @pageSize offset (@page - 1) * @pageSize;
                              """;
+
         await using var connection = new NpgsqlConnection(ConnectionString);
+
         DefaultTypeMap.MatchNamesWithUnderscores = true;
-        var totalItems = await connection.ExecuteScalarAsync<int>("select count(*) from sessions");
-        var sessions =
-            await connection.QueryAsync<SessionResponseDto>(query, new { pageSize, page });
-        var pagedResponse = Helpers.ToPagedResponse(page, pageSize, totalItems, sessions.ToList());
+
+        var result = await connection.QueryAsync<Session>(query, new { pageSize, page });
+
+        var sessions = result.Select(session => session.ToDto()).ToList();
+        var totalItems = result.FirstOrDefault()?.TotalItems ?? 0;
+        var pagedResponse = Helpers.ToPagedResponse(page, pageSize, totalItems, sessions);
+
         return pagedResponse;
     }
 
