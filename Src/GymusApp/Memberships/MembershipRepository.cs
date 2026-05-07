@@ -1,20 +1,20 @@
 using Dapper;
+using gymus_server.GymusApp.Memberships.Dtos.Requests;
 using gymus_server.GymusApp.Memberships.Dtos.Responses;
 using gymus_server.GymusApp.Memberships.Models;
+using gymus_server.Shared.Dtos;
 using Npgsql;
 using NpgsqlTypes;
 using static gymus_server.Shared.Utlis.Helpers;
 
 namespace gymus_server.GymusApp.Memberships.Repositories;
 
-public class MembershipRepository(IConfiguration configuration)
-{
+public class MembershipRepository(IConfiguration configuration) {
     private string ConnectionString =>
         configuration.GetConnectionString("DefaultConnection")
      ?? throw new Exception("No connection string found");
 
-    public async Task<int> RegisterMember(RegisterMember dto)
-    {
+    public async Task<int> RegisterMember(RegisterMember dto) {
         var insertedId = 0;
         const string query = """"
                              select * from register_new_member(_first_name := @FirstName, 
@@ -27,8 +27,7 @@ public class MembershipRepository(IConfiguration configuration)
                              """";
         await using var connection = new NpgsqlConnection(ConnectionString);
 
-        var parameters = new
-        {
+        var parameters = new {
             dto.FirstName,
             dto.LastName,
             dto.Email,
@@ -43,12 +42,10 @@ public class MembershipRepository(IConfiguration configuration)
             CreatedBy = 5
         };
 
-        try
-        {
+        try {
             insertedId = await connection.ExecuteScalarAsync<int>(query, parameters);
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             Console.WriteLine(e.Message);
             DeleteFile(dto.BirthCertificate);
             DeleteFile(dto.MedicalCertificate);
@@ -61,8 +58,7 @@ public class MembershipRepository(IConfiguration configuration)
         return insertedId;
     }
 
-    public async Task<int> RecordAttendance(int memberId)
-    {
+    public async Task<int> RecordAttendance(int memberId) {
         const string query = """
                                 select *
                                 from record_attendance(_member_id := @memberId,_created_by := @createdBy);
@@ -76,8 +72,7 @@ public class MembershipRepository(IConfiguration configuration)
         return insertedId;
     }
 
-    public async Task<int> RenewMembership(int memberId)
-    {
+    public async Task<int> RenewMembership(int memberId) {
         const string query = """
                                 select * 
                                 from renew_membership(_member_id := @memberId,_created_by := @createdBy);
@@ -91,26 +86,30 @@ public class MembershipRepository(IConfiguration configuration)
         return insertedId;
     }
 
-    public async Task<List<MembersResponseDto>> GetAllMembers(int page, int pageSize)
-    {
-        var members = new List<MembersResponseDto>();
+    public async Task<PagedResponse<ApiResponse<List<MembersResponseDto>>>> GetAllMembers(
+        int page,
+        int pageSize
+    ) {
+        List<MembersResponseDto> members = [];
         const string query = """
                                 select * 
-                                from get_all_members(_page := @page, _page_size := @page_size);
+                                from get_all_members(_page := @page, _page_size := @pageSize);
                              """;
         await using var connection = new NpgsqlConnection(ConnectionString);
         await using var command = new NpgsqlCommand(query, connection);
+
         command.Parameters.Add("@page", NpgsqlDbType.Integer).Value = page;
-        command.Parameters.Add("@page_size", NpgsqlDbType.Integer).Value = pageSize;
-        try
-        {
-            await connection.OpenAsync();
+        command.Parameters.Add("@pageSize", NpgsqlDbType.Integer).Value = pageSize;
 
-            await using var reader = await command.ExecuteReaderAsync();
+        await connection.OpenAsync();
 
-            while (await reader.ReadAsync())
-            {
-                var member = new MembersResponseDto(
+        var totalItems = await connection.ExecuteScalarAsync<int>("select count(id) from members");
+
+        await using var reader = await command.ExecuteReaderAsync();
+
+        while (await reader.ReadAsync())
+            members.Add(
+                new MembersResponseDto(
                     reader.GetInt32(reader.GetOrdinal("id")),
                     reader.GetString(reader.GetOrdinal("first_name")),
                     reader.GetString(reader.GetOrdinal("last_name")),
@@ -122,21 +121,15 @@ public class MembershipRepository(IConfiguration configuration)
                     reader.GetDateTime(reader.GetOrdinal("end_date")) > DateTime.Now.Date,
                     reader.GetDateTime(reader.GetOrdinal("created_at")),
                     reader.GetDateTime(reader.GetOrdinal("updated_at"))
-                );
-                members.Add(member);
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            throw;
-        }
+                )
+            );
 
-        return members;
+        var pagedResponse = ToPagedResponse(page, pageSize, totalItems, members);
+
+        return pagedResponse;
     }
 
-    public async Task<MemberCardResponseDto?> GetMemberCard(int memberId)
-    {
+    public async Task<MemberCardResponseDto?> GetMemberCard(int memberId) {
         const string query = """
                                 select * from get_member_card(@member_id)
                              """;
@@ -144,8 +137,7 @@ public class MembershipRepository(IConfiguration configuration)
         await using var connection = new NpgsqlConnection(ConnectionString);
         await using var command = new NpgsqlCommand(query, connection);
         command.Parameters.AddWithValue("@member_id", memberId);
-        try
-        {
+        try {
             await connection.OpenAsync();
 
             await using var reader = await command.ExecuteReaderAsync();
@@ -162,10 +154,14 @@ public class MembershipRepository(IConfiguration configuration)
                 )
                 : null;
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             Console.WriteLine(e);
             throw;
         }
     }
+
+    public async Task<int> DeleteMember(int memberId) => throw new NotImplementedException();
+
+    public async Task<int> UpdateMember(int memberId, MemberUpdateRequestDto dto)
+        => throw new NotImplementedException();
 }

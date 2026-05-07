@@ -1,34 +1,31 @@
 using gymus_server.GymusApp.Store.Dtos.Requests;
 using gymus_server.GymusApp.Store.Dtos.Responses;
 using gymus_server.GymusApp.Store.Mappers;
+using gymus_server.Shared.Dtos;
 using gymus_server.Shared.Exceptions;
 using static gymus_server.Shared.Utlis.Helpers;
 
 namespace gymus_server.GymusApp.Store;
 
-public class StoreService(StoreRepository storeRepository) : IStoreService
-{
-    public async Task<List<ProductResponseDto>> ViewProducts(int page, int pageSize)
-    {
-        return await storeRepository.ViewProducts(page, pageSize);
-    }
+public class StoreService(StoreRepository storeRepository) : IStoreService {
+    public async Task<PagedResponse<ApiResponse<List<ProductResponseDto>>>> ViewProducts(
+        int page,
+        int pageSize
+    ) =>
+        await storeRepository.ViewProducts(page, pageSize);
 
-    public async Task<ProductResponseDto> ViewProduct(int productId)
-    {
-        return await storeRepository.ViewProduct(productId)
-            ?? throw new NotFoundException("Product not found");
-    }
+    public async Task<ProductResponseDto> ViewProduct(int productId) =>
+        await storeRepository.ViewProduct(productId)
+     ?? throw new NotFoundException("Product not found");
 
-    public async Task AddNewProduct(ProductCreateRequestDto dto)
-    {
+    public async Task AddNewProduct(ProductCreateRequestDto dto) {
         var productPhotoFilePath = await UploadFile(dto.ProductImage)
                                 ?? throw new NotFoundException("Product image is required");
         var insertedId = await storeRepository.AddNewProduct(dto.ToEntity(productPhotoFilePath));
         if (insertedId < 0) throw new Exception("Product failed to add");
     }
 
-    public async Task RegisterNewSale(int productId, SaleRegisterRequestDto dto)
-    {
+    public async Task RegisterNewSale(int productId, SaleRegisterRequestDto dto) {
         var insertedId = await storeRepository.RegisterNewSale(productId, dto);
         if (insertedId < 0)
             throw new Exception(
@@ -38,4 +35,9 @@ public class StoreService(StoreRepository storeRepository) : IStoreService
                 """
             );
     }
+
+    public async Task DeleteProduct(int productId) => throw new NotImplementedException();
+
+    public async Task UpdateProduct(int productId, ProductUpdateRequestDto dto) =>
+        throw new NotImplementedException();
 }

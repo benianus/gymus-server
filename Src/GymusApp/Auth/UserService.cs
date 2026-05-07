@@ -5,10 +5,8 @@ using gymus_server.Shared.Exceptions;
 
 namespace gymus_server.GymusApp.Auth;
 
-public class UserService(UserRepository userRepository) : IUserService
-{
-    public async Task<AuthResponseDto> Login(LoginRequestDto loginRequestDto)
-    {
+public class UserService(UserRepository userRepository) : IUserService {
+    public async Task<AuthResponseDto> Login(LoginRequestDto loginRequestDto) {
         var user = await userRepository.FindByUsername(loginRequestDto.Username);
         if (user == null) throw new UsernameNotFoundException("resource not found");
         if (user.Password != loginRequestDto.Password)
@@ -26,8 +24,7 @@ public class UserService(UserRepository userRepository) : IUserService
         );
     }
 
-    public async Task<AuthResponseDto> Register(RegisterRequestDto registerRequestDto)
-    {
+    public async Task<AuthResponseDto> Register(RegisterRequestDto registerRequestDto) {
         var user = await userRepository.Create(registerRequestDto);
 
         if (user == null) throw new NotFoundException("resource not found");

@@ -91,6 +91,8 @@ URL to access available endpoints.
 - [x] Renew memberships
 - [x] Get all members
 - [x] Get member card
+- [ ] Update Member
+- [ ] Delete Member
 
 ### Sessions:
 
@@ -103,6 +105,8 @@ URL to access available endpoints.
 - [x] Get product
 - [x] Add new product
 - [x] Register new sale
+- [ ] Update product
+- [ ] Delete product
 
 ### Reports:
 

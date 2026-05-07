@@ -2,19 +2,21 @@ using Dapper;
 using gymus_server.GymusApp.Store.Dtos.Requests;
 using gymus_server.GymusApp.Store.Dtos.Responses;
 using gymus_server.GymusApp.Store.Models;
+using gymus_server.Shared.Dtos;
 using Npgsql;
 using static gymus_server.Shared.Utlis.Helpers;
 
 namespace gymus_server.GymusApp.Store;
 
-public class StoreRepository(IConfiguration configuration)
-{
+public class StoreRepository(IConfiguration configuration) {
     private string ConnectionString =>
         configuration.GetConnectionString("DefaultConnection")
      ?? throw new Exception("No connection string found");
 
-    public async Task<List<ProductResponseDto>> ViewProducts(int page, int pageSize)
-    {
+    public async Task<PagedResponse<ApiResponse<List<ProductResponseDto>>>> ViewProducts(
+        int page,
+        int pageSize
+    ) {
         const string query = """
                              select
                                  id,
@@ -32,16 +34,16 @@ public class StoreRepository(IConfiguration configuration)
                              """;
         await using var connection = new NpgsqlConnection(ConnectionString);
         DefaultTypeMap.MatchNamesWithUnderscores = true;
-        var products = connection.Query<ProductResponseDto>(
+        var totalItems = await connection.ExecuteScalarAsync<int>("select count(*) from products");
+        var products = await connection.QueryAsync<ProductResponseDto>(
             query,
             new { page, pageSize }
         );
-
-        return products.ToList();
+        var pagedResponse = ToPagedResponse(page, pageSize, totalItems, products.ToList());
+        return pagedResponse;
     }
 
-    public async Task<ProductResponseDto?> ViewProduct(int productId)
-    {
+    public async Task<ProductResponseDto?> ViewProduct(int productId) {
         const string query = """
                              select
                                  id,
@@ -59,8 +61,7 @@ public class StoreRepository(IConfiguration configuration)
         return connection.Query<ProductResponseDto>(query, new { productId }).FirstOrDefault();
     }
 
-    public async Task<int> AddNewProduct(Product dto)
-    {
+    public async Task<int> AddNewProduct(Product dto) {
         var insertedId = -1;
         const string query = """
                                 insert into products (product_name, quantity, price, added_by, product_image, product_description) 
@@ -69,12 +70,10 @@ public class StoreRepository(IConfiguration configuration)
                              """;
         await using var connection = new NpgsqlConnection(ConnectionString);
         DefaultTypeMap.MatchNamesWithUnderscores = true;
-        try
-        {
+        try {
             insertedId = connection.ExecuteScalar<int>(
                 query,
-                new
-                {
+                new {
                     productName = dto.ProductName,
                     quantity = dto.Quantity,
                     price = dto.Price,
@@ -84,8 +83,7 @@ public class StoreRepository(IConfiguration configuration)
                 }
             );
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             DeleteFile(dto.ProductImage);
             Console.WriteLine(e.Message);
             throw;
@@ -94,8 +92,7 @@ public class StoreRepository(IConfiguration configuration)
         return insertedId;
     }
 
-    public async Task<int> RegisterNewSale(int productId, SaleRegisterRequestDto dto)
-    {
+    public async Task<int> RegisterNewSale(int productId, SaleRegisterRequestDto dto) {
         const string query = """
                                 select * from register_new_sale(
                                 _product_id := @productId, 
@@ -111,4 +108,9 @@ public class StoreRepository(IConfiguration configuration)
         );
         return insertedId;
     }
+
+    public async Task<int> DeleteProduct(int productId) => throw new NotImplementedException();
+
+    public async Task<int> UpdateProduct(int productId, ProductUpdateRequestDto dto) =>
+        throw new NotImplementedException();
 }

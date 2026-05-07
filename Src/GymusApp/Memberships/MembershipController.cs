@@ -8,16 +8,13 @@ namespace gymus_server.GymusApp.Memberships;
 
 [ApiController]
 [Route("api/memberships")]
-public class MembershipController(IMembershipService membershipService) : ControllerBase
-{
+public class MembershipController(IMembershipService membershipService) : ControllerBase {
     [HttpPost("register")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> RegisterMember([FromForm] RegisterMemberRequestDto dto)
-    {
-        if (!ModelState.IsValid)
-        {
+    public async Task<IActionResult> RegisterMember([FromForm] RegisterMemberRequestDto dto) {
+        if (!ModelState.IsValid) {
             var errors = ModelState.Values
                                    .SelectMany(v => v.Errors)
                                    .Select(e => e.ErrorMessage)
@@ -35,16 +32,14 @@ public class MembershipController(IMembershipService membershipService) : Contro
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> RecordMemberAttendance([FromRoute] int memberId)
-    {
+    public async Task<IActionResult> RecordMemberAttendance([FromRoute] int memberId) {
         if (IsIdValid(memberId)) return BadRequest(new ApiResponse<List<string>>(["Invalid Id"]));
         await membershipService.RecordAttendance(memberId);
         return Created();
     }
 
     [HttpPost("{memberId}/renew")]
-    public async Task<IActionResult> RenewMembership([FromRoute] int memberId)
-    {
+    public async Task<IActionResult> RenewMembership([FromRoute] int memberId) {
         if (IsIdValid(memberId)) return BadRequest(new ApiResponse<List<string>>(["Invalid Id"]));
         await membershipService.RenewMembership(memberId);
         return Created();
@@ -56,21 +51,29 @@ public class MembershipController(IMembershipService membershipService) : Contro
     public async Task<IActionResult> GetAllMembers(
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 9
-    )
-    {
-        var members = await membershipService.GetAllMembers(page, pageSize);
-        return Ok(new ApiResponse<List<MembersResponseDto>>(members));
+    ) {
+        var pagedResponse = await membershipService.GetAllMembers(page, pageSize);
+        return Ok(pagedResponse);
     }
 
     [HttpGet("members/{memberId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetMemberCard(int memberId)
-    {
+    public async Task<IActionResult> GetMemberCard(int memberId) {
         if (IsIdValid(memberId)) return BadRequest(new ApiResponse<List<string>>(["Invalid Id"]));
 
         var memberCardResponseDto = await membershipService.GetMemberCard(memberId);
         return Ok(new ApiResponse<MemberCardResponseDto>(memberCardResponseDto));
     }
+
+    [HttpDelete("members/{memberId}")]
+    public async Task<IActionResult> DeleteMember([FromRoute] int memberId) =>
+        throw new NotImplementedException();
+
+    [HttpPut("members/{memberId}")]
+    public async Task<IActionResult> UpdateMember(
+        [FromRoute] int memberId,
+        [FromBody] MemberUpdateRequestDto dto
+    ) => throw new NotImplementedException();
 }

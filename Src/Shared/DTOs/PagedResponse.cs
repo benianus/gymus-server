@@ -1,6 +1,6 @@
 namespace gymus_server.Shared.Dtos;
 
-public record PageResponse<T>(
+public record PagedResponse<T>(
     T Data,
     int PageSize,
     long TotalItems,

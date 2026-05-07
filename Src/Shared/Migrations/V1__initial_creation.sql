@@ -129,19 +129,3 @@ create table sales
     created_at  timestamp(2) default current_timestamp(2),
     updated_at  timestamp(2) default current_timestamp(2)
 );
-
--- -- persons
--- -- users
--- -- owners
--- -- employees
--- -- members
--- -- memberships
--- -- membership_types
--- -- membership_renewals
--- -- attendances
--- -- sessions
--- -- session_types
--- -- gym_cards
--- -- products
--- -- sale_items
--- -- sales
