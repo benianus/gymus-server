@@ -4,7 +4,6 @@ using gymus_server.GymusApp.Memberships.Dtos.Responses;
 using gymus_server.GymusApp.Memberships.Models;
 using gymus_server.Shared.Dtos;
 using Npgsql;
-using NpgsqlTypes;
 using static gymus_server.Shared.Utlis.Helpers;
 
 namespace gymus_server.GymusApp.Memberships.Repositories;
@@ -90,39 +89,30 @@ public class MembershipRepository(IConfiguration configuration) {
         int page,
         int pageSize
     ) {
-        List<MembersResponseDto> members = [];
         const string query = """
                                 select * 
                                 from get_all_members(_page := @page, _page_size := @pageSize);
                              """;
+
         await using var connection = new NpgsqlConnection(ConnectionString);
-        await using var command = new NpgsqlCommand(query, connection);
-
-        command.Parameters.Add("@page", NpgsqlDbType.Integer).Value = page;
-        command.Parameters.Add("@pageSize", NpgsqlDbType.Integer).Value = pageSize;
-
-        await connection.OpenAsync();
-
-        var totalItems = await connection.ExecuteScalarAsync<int>("select count(id) from members");
-
-        await using var reader = await command.ExecuteReaderAsync();
-
-        while (await reader.ReadAsync())
-            members.Add(
-                new MembersResponseDto(
-                    reader.GetInt32(reader.GetOrdinal("id")),
-                    reader.GetString(reader.GetOrdinal("first_name")),
-                    reader.GetString(reader.GetOrdinal("last_name")),
-                    reader.GetString(reader.GetOrdinal("email")),
-                    reader.GetString(reader.GetOrdinal("phone_number")),
-                    reader.GetString(reader.GetOrdinal("address")),
-                    reader.GetDateTime(reader.GetOrdinal("birthdate")),
-                    reader.GetString(reader.GetOrdinal("personal_photo")),
-                    reader.GetDateTime(reader.GetOrdinal("end_date")) > DateTime.Now.Date,
-                    reader.GetDateTime(reader.GetOrdinal("created_at")),
-                    reader.GetDateTime(reader.GetOrdinal("updated_at"))
-                )
-            );
+        DefaultTypeMap.MatchNamesWithUnderscores = true;
+        var result = await connection.QueryAsync<Member>(query, new { page, pageSize });
+        var members = result.Select(member => new MembersResponseDto(
+                                        member.Id,
+                                        member.FirstName,
+                                        member.LastName,
+                                        member.Email,
+                                        member.PhoneNumber,
+                                        member.Address,
+                                        member.Birthdate,
+                                        member.PersonalPhoto,
+                                        member.EndDate.Date > DateTime.Now.Date,
+                                        member.CreatedAt,
+                                        member.UpdatedAt
+                                    )
+                             )
+                            .ToList();
+        var totalItems = result.FirstOrDefault().TotalItems;
 
         var pagedResponse = ToPagedResponse(page, pageSize, totalItems, members);
 
