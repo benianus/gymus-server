@@ -4,34 +4,29 @@ using gymus_server.GymusApp.Store.Models;
 
 namespace gymus_server.GymusApp.Store.Mappers;
 
-public static class ProductMappers
-{
+public static class ProductMappers {
     public static Product ToEntity(
         this ProductCreateRequestDto dto,
         string productImageFilePath
-    )
-    {
-        return new Product
-        {
+    ) =>
+        new() {
             ProductName = dto.ProductName,
             ProductDescription = dto.ProductDescription,
             ProductImage = productImageFilePath,
             Quantity = dto.Quantity,
             Price = dto.Price
         };
-    }
 
-    public static ProductResponseDto ToDto(this Product entity)
-    {
-        return new ProductResponseDto(
+    public static ProductResponseDto ToDto(this Product entity) =>
+        new(
             entity.Id,
             entity.ProductName,
-            entity.Quantity,
-            entity.Price,
             entity.ProductImage,
             entity.ProductDescription,
+            entity.Quantity,
+            entity.Price,
+            entity.AddedBy,
             entity.CreatedAt,
             entity.UpdatedAt
         );
-    }
 }
