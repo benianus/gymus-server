@@ -104,7 +104,7 @@ public class MembershipRepository(IConfiguration configuration) {
                                         member.Email,
                                         member.PhoneNumber,
                                         member.Address,
-                                        member.Birthdate,
+                                        member.Birthdate.Date,
                                         member.PersonalPhoto,
                                         member.EndDate.Date > DateTime.Now.Date,
                                         member.CreatedAt,
@@ -112,7 +112,7 @@ public class MembershipRepository(IConfiguration configuration) {
                                     )
                              )
                             .ToList();
-        var totalItems = result.FirstOrDefault().TotalItems;
+        var totalItems = result.First().TotalItems;
 
         var pagedResponse = ToPagedResponse(page, pageSize, totalItems, members);
 
