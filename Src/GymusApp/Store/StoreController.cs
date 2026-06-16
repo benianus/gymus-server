@@ -1,3 +1,4 @@
+using FluentValidation;
 using gymus_server.GymusApp.Store.Dtos.Requests;
 using gymus_server.GymusApp.Store.Dtos.Responses;
 using gymus_server.Shared.Dtos;
@@ -8,7 +9,12 @@ namespace gymus_server.GymusApp.Store;
 
 [ApiController]
 [Route("api/products")]
-public class StoreController(IStoreService storeService) : ControllerBase {
+public class StoreController(
+    IStoreService storeService,
+    IValidator<ProductCreateRequestDto> createProductRequestValidator,
+    IValidator<ProductUpdateRequestDto> updateProductRequestValidator,
+    IValidator<SaleRegisterRequestDto> registerSaleRequestValidator
+) : ControllerBase {
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -38,15 +44,7 @@ public class StoreController(IStoreService storeService) : ControllerBase {
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> AddNewProduct([FromForm] ProductCreateRequestDto dto) {
-        if (!ModelState.IsValid) {
-            var errors = ModelState.Values
-                                   .SelectMany(v => v.Errors)
-                                   .Select(e => e.ErrorMessage)
-                                   .ToList();
-
-            return BadRequest(new ApiResponse<List<string>>(errors));
-        }
-
+        createProductRequestValidator.ValidateAndThrow(dto);
         await storeService.AddNewProduct(dto);
         return Created();
     }
@@ -60,26 +58,21 @@ public class StoreController(IStoreService storeService) : ControllerBase {
         [FromRoute] int productId,
         [FromBody] SaleRegisterRequestDto dto
     ) {
-        if (!ModelState.IsValid) {
-            var errors = ModelState.Values
-                                   .SelectMany(v => v.Errors)
-                                   .Select(e => e.ErrorMessage)
-                                   .ToList();
-
-            return BadRequest(new ApiResponse<List<string>>(errors));
-        }
-
+        registerSaleRequestValidator.ValidateAndThrow(dto);
         await storeService.RegisterNewSale(productId, dto);
         return Created();
     }
 
     [HttpDelete("{productId}")]
-    public async Task<IActionResult> DeleteProduct([FromRoute] int productId) =>
-        throw new NotImplementedException();
+    public async Task<IActionResult> DeleteProduct([FromRoute] int productId) => NoContent();
 
     [HttpPut("{productId}")]
     public async Task<IActionResult> UpdateProduct(
         [FromRoute] int productId,
         [FromBody] ProductUpdateRequestDto dto
-    ) => throw new NotImplementedException();
+    ) {
+        updateProductRequestValidator.ValidateAndThrow(dto);
+        await storeService.UpdateProduct(productId, dto);
+        return NoContent();
+    }
 }

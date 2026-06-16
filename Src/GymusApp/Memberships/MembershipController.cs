@@ -1,3 +1,4 @@
+using FluentValidation;
 using gymus_server.GymusApp.Memberships.Dtos.Requests;
 using gymus_server.GymusApp.Memberships.Dtos.Responses;
 using gymus_server.Shared.Dtos;
@@ -8,23 +9,18 @@ namespace gymus_server.GymusApp.Memberships;
 
 [ApiController]
 [Route("api/memberships")]
-public class MembershipController(IMembershipService membershipService) : ControllerBase {
+public class MembershipController(
+    IMembershipService membershipService,
+    IValidator<RegisterMemberRequestDto> registerMemberValidator,
+    IValidator<MemberUpdateRequestDto> memberUpdateRequestValidator
+) : ControllerBase {
     [HttpPost("register")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> RegisterMember([FromForm] RegisterMemberRequestDto dto) {
-        if (!ModelState.IsValid) {
-            var errors = ModelState.Values
-                                   .SelectMany(v => v.Errors)
-                                   .Select(e => e.ErrorMessage)
-                                   .ToList();
-
-            return BadRequest(new ApiResponse<List<string>>(errors));
-        }
-
+        registerMemberValidator.ValidateAndThrow(dto);
         await membershipService.RegisterMembership(dto);
-
         return Created();
     }
 
@@ -68,12 +64,15 @@ public class MembershipController(IMembershipService membershipService) : Contro
     }
 
     [HttpDelete("members/{memberId}")]
-    public async Task<IActionResult> DeleteMember([FromRoute] int memberId) =>
-        throw new NotImplementedException();
+    public async Task<IActionResult> DeleteMember([FromRoute] int memberId) => NoContent();
 
     [HttpPut("members/{memberId}")]
     public async Task<IActionResult> UpdateMember(
         [FromRoute] int memberId,
         [FromBody] MemberUpdateRequestDto dto
-    ) => throw new NotImplementedException();
+    ) {
+        memberUpdateRequestValidator.ValidateAndThrow(dto);
+        await membershipService.UpdateMember(memberId, dto);
+        return NoContent();
+    }
 }
