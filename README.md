@@ -77,7 +77,9 @@ By default, the API runs on:
 When running in Development mode, OpenAPI is enabled. After starting the project, use the local API
 URL to access available endpoints.
 
-## Main features in this API
+# Main features in this API
+
+## Functional Requirements:
 
 ### Users:
 
@@ -141,6 +143,20 @@ URL to access available endpoints.
 1. [ ] FromMonthToMonth
 2. [ ] FromDayToDay
 3. [ ] FromYearToYear
+
+## Non-Functional Requirements:
+
+#### Security:
+
+1. [ ] HTTPS
+2. [ ] CORS
+3. [ ] JWT Authentication
+4. [ ] Role-Based Authorization
+5. [ ] Ownership policies
+6. [ ] Refresh token & Logout
+7. [ ] Rate limiting
+8. [ ] Logging & Auditing
+9. [ ] Password Hashing
 
 ## Useful commands
 

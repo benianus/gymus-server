@@ -1,12 +1,15 @@
+using FluentValidation;
 using gymus_server.GymusApp.Sessions.Dtos.Requests;
-using gymus_server.Shared.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace gymus_server.GymusApp.Sessions;
 
 [ApiController]
 [Route("api/sessions")]
-public class SessionController(ISessionService sessionService) : ControllerBase {
+public class SessionController(
+    ISessionService sessionService,
+    IValidator<SessionRegisterRequestDto> registerSessionRequestValidator
+) : ControllerBase {
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -25,17 +28,8 @@ public class SessionController(ISessionService sessionService) : ControllerBase 
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> RegisterSession(SessionRegisterRequestDto request) {
-        if (!ModelState.IsValid) {
-            var errors = ModelState.Values
-                                   .SelectMany(v => v.Errors)
-                                   .Select(e => e.ErrorMessage)
-                                   .ToList();
-
-            return BadRequest(new ApiResponse<List<string>>(errors));
-        }
-
+        registerSessionRequestValidator.ValidateAndThrow(request);
         await sessionService.RegisterSession(request);
-
         return Created();
     }
 }

@@ -1,11 +1,20 @@
+using FluentValidation;
 using gymus_server.GymusApp.Auth;
+using gymus_server.GymusApp.Auth.Dtos.Requests;
 using gymus_server.GymusApp.Memberships;
+using gymus_server.GymusApp.Memberships.Dtos.Requests;
 using gymus_server.GymusApp.Memberships.Repositories;
 using gymus_server.GymusApp.Reports;
 using gymus_server.GymusApp.Sessions;
+using gymus_server.GymusApp.Sessions.Dtos.Requests;
 using gymus_server.GymusApp.Sessions.Repositories;
 using gymus_server.GymusApp.Store;
+using gymus_server.GymusApp.Store.Dtos.Requests;
 using gymus_server.Shared.Infrastructures;
+using gymus_server.Shared.Validations.AuthValidations;
+using gymus_server.Shared.Validations.MembershipValidations;
+using gymus_server.Shared.Validations.SessionValidations;
+using gymus_server.Shared.Validations.StoreValidations;
 
 namespace gymus_server.Shared.DependencyInjection;
 
@@ -30,6 +39,23 @@ public static class DependencyInjectionCollector {
             services.AddSingleton<StoreRepository>();
             services.AddSingleton<SalesReportsRepository>();
             services.AddSingleton<RevenueReportsRepository>();
+            return services;
+        }
+
+        public IServiceCollection AddValidatorsServices() {
+            services.AddScoped<IValidator<LoginRequestDto>, LoginRequestValidation>();
+            services.AddScoped<IValidator<RegisterRequestDto>, RegisterRequestValidation>();
+            services
+               .AddScoped<IValidator<RegisterMemberRequestDto>, RegisterMemberRequestValidation>();
+            services.AddScoped<IValidator<MemberUpdateRequestDto>, UpdateMemberRequestValidation>();
+            services
+               .AddScoped<IValidator<SessionRegisterRequestDto>,
+                    SessionRegisterRequestValidation>();
+            services
+               .AddScoped<IValidator<ProductCreateRequestDto>, CreateProductRequestValidation>();
+            services
+               .AddScoped<IValidator<ProductUpdateRequestDto>, UpdateProductRequestValidation>();
+            services.AddScoped<IValidator<SaleRegisterRequestDto>, RegisterSaleRequestValidation>();
             return services;
         }
     }

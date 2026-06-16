@@ -25,8 +25,9 @@ public class UserService(UserRepository userRepository) : IUserService {
     }
 
     public async Task<AuthResponseDto> Register(RegisterRequestDto registerRequestDto) {
+        // TODO: save the password hashed later
         var user = await userRepository.Create(registerRequestDto);
-
+            
         if (user == null) throw new NotFoundException("resource not found");
 
         // TODO: generate refresh & access tokens later
