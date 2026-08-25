@@ -1,6 +1,7 @@
 using FluentValidation;
 using gymus_server.GymusApp.Auth;
 using gymus_server.GymusApp.Auth.Dtos.Requests;
+using gymus_server.GymusApp.Auth.Models;
 using gymus_server.GymusApp.Memberships;
 using gymus_server.GymusApp.Memberships.Dtos.Requests;
 using gymus_server.GymusApp.Memberships.Repositories;
@@ -11,10 +12,12 @@ using gymus_server.GymusApp.Sessions.Repositories;
 using gymus_server.GymusApp.Store;
 using gymus_server.GymusApp.Store.Dtos.Requests;
 using gymus_server.Shared.Infrastructures;
+using gymus_server.Shared.Security;
 using gymus_server.Shared.Validations.AuthValidations;
 using gymus_server.Shared.Validations.MembershipValidations;
 using gymus_server.Shared.Validations.SessionValidations;
 using gymus_server.Shared.Validations.StoreValidations;
+using Microsoft.AspNetCore.Identity;
 
 namespace gymus_server.Shared.DependencyInjection;
 
@@ -29,6 +32,8 @@ public static class DependencyInjectionCollector {
             services.AddSingleton<IRevenueReportsService, RevenueReportsService>();
             services.AddSingleton<ISalesReportsService, SalesReportsService>();
             services.AddSingleton<IDbConnectionFactory, NpgSqlConnectionFactory>();
+            services.AddSingleton<PasswordHasher<User>>();
+            services.AddSingleton<JwtHelpers>();
             return services;
         }
 
