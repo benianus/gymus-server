@@ -2,11 +2,13 @@ using FluentValidation;
 using gymus_server.GymusApp.Memberships.Dtos.Requests;
 using gymus_server.GymusApp.Memberships.Dtos.Responses;
 using gymus_server.Shared.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static gymus_server.Shared.Utlis.Helpers;
 
 namespace gymus_server.GymusApp.Memberships;
 
+[Authorize]
 [ApiController]
 [Route("api/memberships")]
 public class MembershipController(

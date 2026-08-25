@@ -1,8 +1,10 @@
 using gymus_server.Shared.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace gymus_server.GymusApp.Reports;
 
+[Authorize]
 [ApiController]
 [Route("api/reports")]
 public class SalesReportsController(ISalesReportsService salesReportsService) : ControllerBase {

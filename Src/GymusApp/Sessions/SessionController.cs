@@ -1,9 +1,11 @@
 using FluentValidation;
 using gymus_server.GymusApp.Sessions.Dtos.Requests;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace gymus_server.GymusApp.Sessions;
 
+[Authorize]
 [ApiController]
 [Route("api/sessions")]
 public class SessionController(

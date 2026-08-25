@@ -24,8 +24,7 @@ public class MembershipService(MembershipRepository membershipRepository) : IMem
 
     public async Task RegisterMembership(RegisterMemberRequestDto dto)
     {
-        if (dto.Age < 18
-         && dto.ParentalAuthorization == null)
+        if (dto.Age < 18 && dto.ParentalAuthorization == null)
             throw new Exception("miss of parental authorization or you're less than 18 years old");
 
         var files = await UploadFiles(dto);

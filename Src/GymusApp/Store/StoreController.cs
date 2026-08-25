@@ -2,11 +2,13 @@ using FluentValidation;
 using gymus_server.GymusApp.Store.Dtos.Requests;
 using gymus_server.GymusApp.Store.Dtos.Responses;
 using gymus_server.Shared.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static gymus_server.Shared.Utlis.Helpers;
 
 namespace gymus_server.GymusApp.Store;
 
+[Authorize]
 [ApiController]
 [Route("api/products")]
 public class StoreController(
