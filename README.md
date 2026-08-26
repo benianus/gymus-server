@@ -148,11 +148,11 @@ URL to access available endpoints.
 
 #### Security:
 
-1. [ ] HTTPS
-2. [ ] CORS
-3. [ ] JWT Authentication
-4. [ ] Role-Based Authorization
-5. [ ] Ownership policies
+1. [x] HTTPS
+2. [x] CORS
+3. [x] JWT Authentication
+4. [x] Role-Based Authorization
+5. [x] Ownership policies
 6. [ ] Refresh token & Logout
 7. [ ] Rate limiting
 8. [ ] Logging & Auditing

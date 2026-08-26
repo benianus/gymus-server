@@ -13,6 +13,17 @@ public class MembershipRepository(IConfiguration configuration) {
         configuration.GetConnectionString("DefaultConnection")
      ?? throw new Exception("No connection string found");
 
+    public async Task<bool> IsUserOwnMembership(int memberId, int userId) {
+        const string query = """
+                             select count(id) > 0 as is_owner
+                             from members
+                             where id = @memberId and created_by = @userId;
+                             """;
+
+        await using var connection = new NpgsqlConnection(ConnectionString);
+        return await connection.ExecuteScalarAsync<bool>(query, new { memberId, userId });
+    }
+
     public async Task<int> RegisterMember(RegisterMember dto) {
         var insertedId = 0;
         const string query = """"

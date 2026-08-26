@@ -15,8 +15,10 @@ public class StoreController(
     IStoreService storeService,
     IValidator<ProductCreateRequestDto> createProductRequestValidator,
     IValidator<ProductUpdateRequestDto> updateProductRequestValidator,
-    IValidator<SaleRegisterRequestDto> registerSaleRequestValidator
+    IValidator<SaleRegisterRequestDto> registerSaleRequestValidator,
+    IAuthorizationService authorizationService
 ) : ControllerBase {
+    [Authorize(Roles = "Owner, Employee, Member")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -29,28 +31,32 @@ public class StoreController(
         return Ok(pagedResponse);
     }
 
+    [Authorize(Roles = "Owner, Employee")]
     [HttpGet("{productId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ViewProduct([FromRoute] int productId) {
+        await authorizationService.AuthorizeAsync(User, productId, "StoreOwner");
         if (IsIdValid(productId)) BadRequest("Invalid product id");
         var product = await storeService.ViewProduct(productId);
         return Ok(new ApiResponse<ProductResponseDto>(product));
     }
 
+    [Authorize(Roles = "Owner")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> AddNewProduct([FromForm] ProductCreateRequestDto dto) {
-        createProductRequestValidator.ValidateAndThrow(dto);
+        await createProductRequestValidator.ValidateAndThrowAsync(dto);
         await storeService.AddNewProduct(dto);
         return Created();
     }
 
+    [Authorize(Roles = "Owner, Employee")]
     [HttpPost("{productId}/sales")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -60,20 +66,27 @@ public class StoreController(
         [FromRoute] int productId,
         [FromBody] SaleRegisterRequestDto dto
     ) {
-        registerSaleRequestValidator.ValidateAndThrow(dto);
+        await authorizationService.AuthorizeAsync(User, productId, "StoreOwner");
+        await registerSaleRequestValidator.ValidateAndThrowAsync(dto);
         await storeService.RegisterNewSale(productId, dto);
         return Created();
     }
 
+    [Authorize(Roles = "Owner")]
     [HttpDelete("{productId}")]
-    public async Task<IActionResult> DeleteProduct([FromRoute] int productId) => NoContent();
+    public async Task<IActionResult> DeleteProduct([FromRoute] int productId) {
+        await authorizationService.AuthorizeAsync(User, productId, "StoreOwner");
+        return NoContent();
+    }
 
+    [Authorize(Roles = "Owner")]
     [HttpPut("{productId}")]
     public async Task<IActionResult> UpdateProduct(
         [FromRoute] int productId,
         [FromBody] ProductUpdateRequestDto dto
     ) {
-        updateProductRequestValidator.ValidateAndThrow(dto);
+        await authorizationService.AuthorizeAsync(User, productId, "StoreOwner");
+        await updateProductRequestValidator.ValidateAndThrowAsync(dto);
         await storeService.UpdateProduct(productId, dto);
         return NoContent();
     }

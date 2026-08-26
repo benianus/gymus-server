@@ -12,6 +12,7 @@ public class SessionController(
     ISessionService sessionService,
     IValidator<SessionRegisterRequestDto> registerSessionRequestValidator
 ) : ControllerBase {
+    [Authorize(Roles = "Owner, Employee")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -24,13 +25,14 @@ public class SessionController(
         return Ok(pagedResponse);
     }
 
+    [Authorize(Roles = "Owner, Employee")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> RegisterSession(SessionRegisterRequestDto request) {
-        registerSessionRequestValidator.ValidateAndThrow(request);
+        await registerSessionRequestValidator.ValidateAndThrowAsync(request);
         await sessionService.RegisterSession(request);
         return Created();
     }

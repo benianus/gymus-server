@@ -14,8 +14,8 @@ public class GlobalExceptionHandler : IExceptionHandler {
         response.ContentType = "application/json";
 
         var statusCode = exception switch {
-            BadCredentialsException or UsernameNotFoundException =>
-                StatusCodes.Status401Unauthorized,
+            BadCredentialsException => StatusCodes.Status401Unauthorized,
+            ForbiddenAccessException => StatusCodes.Status403Forbidden,
             NotFoundException => StatusCodes.Status404NotFound,
             InvalidIdException => StatusCodes.Status400BadRequest,
             _ => StatusCodes.Status500InternalServerError

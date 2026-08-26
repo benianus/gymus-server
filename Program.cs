@@ -1,4 +1,6 @@
 using System.Text;
+using gymus_server.Shared.AuthorizationPolicies.Memberships;
+using gymus_server.Shared.AuthorizationPolicies.StorePolicies;
 using gymus_server.Shared.DependencyInjection;
 using gymus_server.Shared.Exceptions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -13,8 +15,13 @@ builder.Services.AddOpenApi();
 builder.Services.AddApplicationServices();
 builder.Services.AddRepositoryServices();
 builder.Services.AddValidatorsServices();
+builder.Services.AddAuthorizationPolicies();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
+builder.Services.AddHttpsRedirection(options => {
+    options.HttpsPort = 8080;
+    options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
+});
 builder.Services.AddCors(corsOptions => {
         corsOptions.AddPolicy(
             "GymusApiPolicy",
@@ -38,13 +45,25 @@ builder.Services
                     ValidIssuer = builder.Configuration.GetSection("Jwt:Issuer").Value,
                     IssuerSigningKey = new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(
-                            builder.Configuration.GetSection("Jwt:SecurityKey").Value!
+                            builder.Configuration.GetSection("Jwt:SecretKey").Value!
                         )
                     )
                 };
             }
         );
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options => {
+        options.AddPolicy(
+            "MembershipsOwner",
+            policy => {
+                policy.Requirements.Add(new MembershipsOwnerRequirement());
+            }
+        );
+        options.AddPolicy(
+            "StoreOwner",
+            policy => { policy.Requirements.Add(new StoreOwnershipRequirement()); }
+        );
+    }
+);
 
 var app = builder.Build();
 
