@@ -11,18 +11,27 @@ using gymus_server.GymusApp.Sessions.Dtos.Requests;
 using gymus_server.GymusApp.Sessions.Repositories;
 using gymus_server.GymusApp.Store;
 using gymus_server.GymusApp.Store.Dtos.Requests;
+using gymus_server.Shared.AuthorizationPolicies.Memberships;
+using gymus_server.Shared.AuthorizationPolicies.StorePolicies;
 using gymus_server.Shared.Infrastructures;
 using gymus_server.Shared.Security;
 using gymus_server.Shared.Validations.AuthValidations;
 using gymus_server.Shared.Validations.MembershipValidations;
 using gymus_server.Shared.Validations.SessionValidations;
 using gymus_server.Shared.Validations.StoreValidations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 
 namespace gymus_server.Shared.DependencyInjection;
 
 public static class DependencyInjectionCollector {
     extension(IServiceCollection services) {
+        public IServiceCollection AddAuthorizationPolicies() {
+            services.AddSingleton<IAuthorizationHandler, MembershipsOwnerHandler>();
+            services.AddSingleton<IAuthorizationHandler, StoreOwnershipHandler>();
+            return services;
+        }
+
         public IServiceCollection AddApplicationServices() {
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IMembershipService, MembershipService>();
@@ -34,6 +43,8 @@ public static class DependencyInjectionCollector {
             services.AddSingleton<IDbConnectionFactory, NpgSqlConnectionFactory>();
             services.AddSingleton<PasswordHasher<User>>();
             services.AddSingleton<JwtHelpers>();
+            services.AddSingleton<SecurityUtils>();
+            services.AddSingleton<IAuthorizationHandler, MembershipsOwnerHandler>();
             return services;
         }
 

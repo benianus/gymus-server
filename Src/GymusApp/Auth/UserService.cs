@@ -18,7 +18,7 @@ public class UserService(
     : IUserService {
     public async Task<AuthResponseDto> Login(LoginRequestDto loginRequestDto) {
         var user = await userRepository.FindByUsername(loginRequestDto.Username);
-        if (user == null) throw new UsernameNotFoundException("Invalid credentials");
+        if (user == null) throw new BadCredentialsException("Invalid credentials");
 
         // verify password
         if (!Verify(loginRequestDto.Password, user.Password))
@@ -60,7 +60,7 @@ public class UserService(
             new Claim(ClaimTypes.Name, user.Username),
             new Claim(ClaimTypes.Role, user.Role)
         };
-        
+
         var accessToken = jwtHelpers.GenerateAccessToken(claims);
         var refreshToken = jwtHelpers.GenerateRefreshToken(claims);
 

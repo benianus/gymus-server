@@ -44,7 +44,7 @@ public class StoreRepository(IConfiguration configuration) {
         var products = result.Select(product => product.ToDto()).ToList();
         var totalItems = result.FirstOrDefault().TotalItems;
         var pagedResponse = ToPagedResponse(page, pageSize, totalItems, products);
-        
+
         return pagedResponse;
     }
 
@@ -118,4 +118,13 @@ public class StoreRepository(IConfiguration configuration) {
 
     public async Task<int> UpdateProduct(int productId, ProductUpdateRequestDto dto) =>
         throw new NotImplementedException();
+
+    public async Task<bool> IsUserOwnProduct(int productId, int userId) {
+        const string query = """
+                             select * from products where id = @productId and added_by = @userId
+                             """;
+
+        await using var connection = new NpgsqlConnection(ConnectionString);
+        return await connection.ExecuteScalarAsync<bool>(query, new { productId, userId });
+    }
 }
