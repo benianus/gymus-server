@@ -2,8 +2,10 @@ using FluentValidation;
 using gymus_server.GymusApp.Auth.Dtos.Requests;
 using gymus_server.GymusApp.Auth.Dtos.Responses;
 using gymus_server.Shared.Dtos;
+using gymus_server.Shared.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace gymus_server.GymusApp.Auth;
 
@@ -15,6 +17,7 @@ public class UserController(
     IValidator<LoginRequestDto> loginRequestValidator,
     IValidator<RegisterRequestDto> registerRequestValidator
 ) : ControllerBase {
+    [EnableRateLimiting(nameof(RateLimiterPolicies.AuthRateLimiter))]
     [AllowAnonymous]
     [HttpPost("login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -27,6 +30,7 @@ public class UserController(
     }
 
     [AllowAnonymous]
+    [EnableRateLimiting(nameof(RateLimiterPolicies.AuthRateLimiter))]
     [HttpPost("register")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -38,6 +42,7 @@ public class UserController(
     }
 
     [AllowAnonymous]
+    [EnableRateLimiting(nameof(RateLimiterPolicies.AuthRateLimiter))]
     [HttpPost("refresh")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -50,6 +55,7 @@ public class UserController(
     }
 
     [AllowAnonymous]
+    [EnableRateLimiting(nameof(RateLimiterPolicies.AuthRateLimiter))]
     [HttpPost("logout")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

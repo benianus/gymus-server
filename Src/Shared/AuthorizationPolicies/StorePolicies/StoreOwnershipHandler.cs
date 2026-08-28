@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace gymus_server.Shared.AuthorizationPolicies.StorePolicies;
 
-public class StoreOwnershipHandler(StoreRepository storeRepository)
-    : AuthorizationHandler<StoreOwnershipRequirement, int> {
+public class StoreOwnershipHandler(
+    StoreRepository storeRepository
+) : AuthorizationHandler<StoreOwnershipRequirement, int>
+{
     protected override async Task<Task> HandleRequirementAsync(
         AuthorizationHandlerContext context,
         StoreOwnershipRequirement requirement,

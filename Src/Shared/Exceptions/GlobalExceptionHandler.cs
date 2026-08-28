@@ -19,6 +19,7 @@ public class GlobalExceptionHandler : IExceptionHandler {
             NotFoundException => StatusCodes.Status404NotFound,
             InvalidIdException => StatusCodes.Status400BadRequest,
             LogoutException => StatusCodes.Status200OK,
+            TooManyRequestsException => StatusCodes.Status429TooManyRequests,
             _ => StatusCodes.Status500InternalServerError
         };
 
