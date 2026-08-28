@@ -36,4 +36,28 @@ public class UserController(
         var authResponse = await userService.Register(registerRequestDto);
         return Ok(new ApiResponse<AuthResponseDto>(authResponse));
     }
+
+    [AllowAnonymous]
+    [HttpPost("refresh")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> RefreshToken(
+        [FromBody] RefreshTokenRequestDto refreshTokenRequestDto
+    ) {
+        var refreshTokenResponse = await userService.RefreshToken(refreshTokenRequestDto);
+        return Ok(new ApiResponse<RefreshTokenResponseDto>(refreshTokenResponse));
+    }
+
+    [AllowAnonymous]
+    [HttpPost("logout")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Logout(
+        [FromBody] LogoutRequestDto logoutRequestDto
+    ) {
+        await userService.Logout(logoutRequestDto);
+        return Ok();
+    }
 }

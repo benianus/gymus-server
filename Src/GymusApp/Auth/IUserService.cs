@@ -6,4 +6,6 @@ namespace gymus_server.GymusApp.Auth;
 public interface IUserService {
     Task<AuthResponseDto> Login(LoginRequestDto loginRequestDto);
     Task<AuthResponseDto> Register(RegisterRequestDto registerRequestDto);
+    Task<RefreshTokenResponseDto> RefreshToken(RefreshTokenRequestDto refreshTokenRequestDto);
+    Task Logout(LogoutRequestDto logoutRequestDto);
 }

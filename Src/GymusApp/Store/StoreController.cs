@@ -18,7 +18,7 @@ public class StoreController(
     IValidator<SaleRegisterRequestDto> registerSaleRequestValidator,
     IAuthorizationService authorizationService
 ) : ControllerBase {
-    [Authorize(Roles = "Owner, Employee, Member")]
+    [AllowAnonymous]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

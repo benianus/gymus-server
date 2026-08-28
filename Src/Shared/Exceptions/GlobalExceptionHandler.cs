@@ -18,6 +18,7 @@ public class GlobalExceptionHandler : IExceptionHandler {
             ForbiddenAccessException => StatusCodes.Status403Forbidden,
             NotFoundException => StatusCodes.Status404NotFound,
             InvalidIdException => StatusCodes.Status400BadRequest,
+            LogoutException => StatusCodes.Status200OK,
             _ => StatusCodes.Status500InternalServerError
         };
 

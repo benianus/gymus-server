@@ -1,21 +1,19 @@
-using System.Security.Claims;
 using gymus_server.GymusApp.Auth.Dtos.Requests;
 using gymus_server.GymusApp.Auth.Dtos.Responses;
 using gymus_server.GymusApp.Auth.Models;
 using gymus_server.Shared.Enums;
 using gymus_server.Shared.Exceptions;
 using gymus_server.Shared.Security;
-using Microsoft.AspNetCore.Identity;
 using static BCrypt.Net.BCrypt;
 
 namespace gymus_server.GymusApp.Auth;
 
 public class UserService(
     UserRepository userRepository,
-    PasswordHasher<User> passwordHasher,
-    JwtHelpers jwtHelpers
-)
-    : IUserService {
+    JwtHelpers jwtHelpers,
+    IConfiguration configuration,
+    RefreshTokenRepository refreshTokenRepository
+) : IUserService {
     public async Task<AuthResponseDto> Login(LoginRequestDto loginRequestDto) {
         var user = await userRepository.FindByUsername(loginRequestDto.Username);
         if (user == null) throw new BadCredentialsException("Invalid credentials");
@@ -24,23 +22,33 @@ public class UserService(
         if (!Verify(loginRequestDto.Password, user.Password))
             throw new BadCredentialsException("Invalid credentials");
 
-        // TODO: generate refresh & access tokens later
-        var claims = new[] {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Role, user.Role)
-        };
+        var claims = jwtHelpers.GenerateClaims(user);
 
+        /***
+         * generate refresh token & access token in each login
+         */
         var accessToken = jwtHelpers.GenerateAccessToken(claims);
-
         var refreshToken = jwtHelpers.GenerateRefreshToken(claims);
+
+        /***
+         * extract expiration time
+         * it's very important for frontend
+         */
+        var expiresAt = jwtHelpers.ExtractExpiration(accessToken);
+
+        /***
+         * save refresh token in the database
+         */
+
+        if (await refreshTokenRepository.SaveRefreshToken(refreshToken, user.Id) <= 0)
+            throw new Exception("saving refresh token failed");
 
         return new AuthResponseDto(
             user.Id,
             accessToken,
             refreshToken,
             nameof(Roles.Owner),
-            DateTime.Now.AddMinutes(30).Ticks
+            expiresAt
         );
     }
 
@@ -54,22 +62,71 @@ public class UserService(
 
         if (user == null) throw new NotFoundException("registration failed");
 
-        // TODO: generate refresh & access tokens later
-        var claims = new[] {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Role, user.Role)
-        };
+        var claims = jwtHelpers.GenerateClaims(user);
 
         var accessToken = jwtHelpers.GenerateAccessToken(claims);
         var refreshToken = jwtHelpers.GenerateRefreshToken(claims);
+
+        var expiresAt = jwtHelpers.ExtractExpiration(accessToken);
+
+        if (await refreshTokenRepository.SaveRefreshToken(refreshToken, user.Id) <= 0)
+            throw new Exception("saving refresh token failed");
 
         return new AuthResponseDto(
             user.Id,
             accessToken,
             refreshToken,
             nameof(Roles.Owner),
-            DateTime.Now.AddMinutes(30).Ticks
+            expiresAt
         );
+    }
+
+    public async Task<RefreshTokenResponseDto> RefreshToken(
+        RefreshTokenRequestDto refreshTokenRequestDto
+    ) {
+        var user = await userRepository.FindByUsername(refreshTokenRequestDto.Username)
+                ?? throw new NotFoundException("resource not found");
+
+        if (!await refreshTokenRepository.FindByRefreshToken(
+                refreshTokenRequestDto.RefreshToken,
+                user.Id
+            ))
+            throw new Exception("invalid refresh token");
+
+        if (!await jwtHelpers.IsTokenValid(refreshTokenRequestDto.RefreshToken))
+            throw new BadCredentialsException("Invalid refresh token");
+
+        var claims = jwtHelpers.GenerateClaims(user);
+
+        var accessToken = jwtHelpers.GenerateAccessToken(claims);
+        var refreshToken = jwtHelpers.GenerateRefreshToken(claims);
+
+        await refreshTokenRepository.UpdateRefreshToken(
+            user.Id,
+            refreshToken,
+            DateTime.Now,
+            DateTime.Now.AddDays(7)
+        );
+
+        return new RefreshTokenResponseDto(
+            accessToken,
+            refreshToken
+        );
+    }
+
+    public async Task Logout(LogoutRequestDto logoutRequestDto) {
+        var user = await userRepository.FindByUsername(logoutRequestDto.Username)
+                ?? throw new LogoutException();
+
+        if (!await refreshTokenRepository.FindByRefreshToken(
+                logoutRequestDto.RefreshToken,
+                user.Id
+            ))
+            throw new LogoutException();
+
+        if (await refreshTokenRepository.DeleteRefreshToken(user.Id) == 1)
+            throw new LogoutException("logout successful");
+
+        throw new LogoutException();
     }
 }
