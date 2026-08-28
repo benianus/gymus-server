@@ -20,7 +20,6 @@ using gymus_server.Shared.Validations.MembershipValidations;
 using gymus_server.Shared.Validations.SessionValidations;
 using gymus_server.Shared.Validations.StoreValidations;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 
 namespace gymus_server.Shared.DependencyInjection;
 
@@ -41,7 +40,6 @@ public static class DependencyInjectionCollector {
             services.AddSingleton<IRevenueReportsService, RevenueReportsService>();
             services.AddSingleton<ISalesReportsService, SalesReportsService>();
             services.AddSingleton<IDbConnectionFactory, NpgSqlConnectionFactory>();
-            services.AddSingleton<PasswordHasher<User>>();
             services.AddSingleton<JwtHelpers>();
             services.AddSingleton<SecurityUtils>();
             services.AddSingleton<IAuthorizationHandler, MembershipsOwnerHandler>();
@@ -55,6 +53,7 @@ public static class DependencyInjectionCollector {
             services.AddSingleton<StoreRepository>();
             services.AddSingleton<SalesReportsRepository>();
             services.AddSingleton<RevenueReportsRepository>();
+            services.AddSingleton<RefreshTokenRepository>();
             return services;
         }
 

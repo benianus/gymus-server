@@ -1,3 +1,3 @@
 namespace gymus_server.GymusApp.Auth.Dtos.Requests;
 
-public record RefreshTokenRequestDto();
+public record RefreshTokenRequestDto(string Username, string RefreshToken);

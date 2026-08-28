@@ -1,5 +1,3 @@
 namespace gymus_server.GymusApp.Auth.Dtos.Requests;
 
-public class LogoutRequestDto {
-    
-}
+public record LogoutRequestDto(string Username, string RefreshToken);

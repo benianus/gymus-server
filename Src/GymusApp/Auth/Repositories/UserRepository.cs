@@ -9,22 +9,6 @@ public class UserRepository(IConfiguration configuration) {
         configuration.GetConnectionString("DefaultConnection")
      ?? throw new Exception("Invalid connection string");
 
-    public async Task<int> SaveRefreshToken(string refreshToken, int userId) {
-        const string query = """
-                             insert into refresh_tokens (user_id, refresh_token, revoked_at, expires_at) 
-                             values (@userId,@refreshToken, @revokedAt, @expiresAt)
-                             returning id;
-                             """;
-
-        await using var connection = new NpgsqlConnection(_connectionString);
-        return await connection.ExecuteScalarAsync<int>(
-            query,
-            new {
-                userId, refreshToken, revokedAt = DateTime.Now, expiresAt = DateTime.Now.AddDays(7)
-            }
-        );
-    }
-
     public async Task<User?> FindByUsername(string username) {
         try {
             const string query = "SELECT * FROM users where username = @username";
@@ -77,26 +61,5 @@ public class UserRepository(IConfiguration configuration) {
             Console.WriteLine(e);
             throw;
         }
-    }
-
-    public async Task<int> UpdateRefreshToken(
-        int userId,
-        string? refreshToken = null,
-        DateTime? revokedAt = null,
-        DateTime? expiresAt = null
-    ) {
-        const string query = """
-                             update refresh_tokens set refresh_token = @refreshToken,
-                                                       revoked_at = @revokedAt,
-                                                       expires_at = @expiresAt
-                                                   where user_id = @userId;
-                             """;
-
-        await using var connection = new NpgsqlConnection(_connectionString);
-        var rowsAffected = await connection.ExecuteAsync(
-            query,
-            new { refreshToken, revokedAt, expiresAt, userId }
-        );
-        return rowsAffected;
     }
 }
