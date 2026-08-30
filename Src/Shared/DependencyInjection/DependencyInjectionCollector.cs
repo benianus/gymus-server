@@ -23,8 +23,10 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace gymus_server.Shared.DependencyInjection;
 
-public static class DependencyInjectionCollector {
-    extension(IServiceCollection services) {
+public static class DependencyInjectionCollector
+{
+    extension(IServiceCollection services)
+    {
         public IServiceCollection AddAuthorizationPolicies() {
             services.AddSingleton<IAuthorizationHandler, MembershipsOwnerHandler>();
             services.AddSingleton<IAuthorizationHandler, StoreOwnershipHandler>();
@@ -43,6 +45,7 @@ public static class DependencyInjectionCollector {
             services.AddSingleton<JwtHelpers>();
             services.AddSingleton<SecurityUtils>();
             services.AddSingleton<IAuthorizationHandler, MembershipsOwnerHandler>();
+            services.AddSingleton<JwtProperties>();
             return services;
         }
 

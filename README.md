@@ -154,9 +154,8 @@ URL to access available endpoints.
 4. [x] Role-Based Authorization
 5. [x] Ownership policies
 6. [x] Refresh token & Logout
-7. [ ] Rate limiting
-8. [ ] Logging & Auditing
-9. [ ] Password Hashing
+7. [x] Rate limiting
+8. [x] Logging & Auditing
 
 ## Useful commands
 
