@@ -12,11 +12,13 @@ namespace gymus_server.GymusApp.Auth;
 [Authorize]
 [ApiController]
 [Route("api/auth")]
-public class UserController(
+public partial class UserController(
     IUserService userService,
     IValidator<LoginRequestDto> loginRequestValidator,
-    IValidator<RegisterRequestDto> registerRequestValidator
-) : ControllerBase {
+    IValidator<RegisterRequestDto> registerRequestValidator,
+    ILogger<UserController> logger
+) : ControllerBase
+{
     [EnableRateLimiting(nameof(RateLimiterPolicies.AuthRateLimiter))]
     [AllowAnonymous]
     [HttpPost("login")]
@@ -36,8 +38,18 @@ public class UserController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Register([FromBody] RegisterRequestDto registerRequestDto) {
-        await registerRequestValidator.ValidateAndThrowAsync(registerRequestDto);
+        var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
+        var result = await registerRequestValidator.ValidateAsync(registerRequestDto);
+
+        if (result.IsValid) {
+            LogRegisterFailedUserUsernameEnterInvalidInputFromIpIp(registerRequestDto.Username, ip);
+            var errors = result.Errors.Select(e => e.ErrorMessage).ToList();
+            return BadRequest(new ApiResponse<List<string>>(errors));
+        }
+
         var authResponse = await userService.Register(registerRequestDto);
+
         return Ok(new ApiResponse<AuthResponseDto>(authResponse));
     }
 

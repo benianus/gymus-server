@@ -6,6 +6,7 @@ using gymus_server.Shared.DependencyInjection;
 using gymus_server.Shared.Enums;
 using gymus_server.Shared.Exceptions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +21,10 @@ builder.Services.AddValidatorsServices();
 builder.Services.AddAuthorizationPolicies();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
+
+/***
+ * security layers
+ */
 builder.Services.AddHttpsRedirection(options => {
         options.HttpsPort = 8080;
         options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
@@ -102,9 +107,15 @@ builder.Services.AddRateLimiter(options => {
                 );
             }
         );
-
     }
 );
+
+builder.Services.AddHttpLogging(options => options.LoggingFields = HttpLoggingFields.All);
+
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddLogging();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -123,6 +134,8 @@ app.UseAuthorization();
 app.UseStaticFiles();
 
 app.UseExceptionHandler();
+
+app.UseHttpLogging();
 
 app.MapControllers();
 

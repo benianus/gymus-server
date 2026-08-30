@@ -4,7 +4,8 @@ using gymus_server.Shared.Dtos;
 
 namespace gymus_server.GymusApp.Memberships;
 
-public interface IMembershipService {
+public interface IMembershipService
+{
     Task<PagedResponse<ApiResponse<List<MembersResponseDto>>>>
         GetAllMembers(int page, int pageSize);
 

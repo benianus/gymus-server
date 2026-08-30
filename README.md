@@ -155,7 +155,7 @@ URL to access available endpoints.
 5. [x] Ownership policies
 6. [x] Refresh token & Logout
 7. [x] Rate limiting
-8. [ ] Logging & Auditing
+8. [x] Logging & Auditing
 
 ## Useful commands
 
