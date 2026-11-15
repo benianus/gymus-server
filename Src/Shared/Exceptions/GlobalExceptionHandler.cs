@@ -3,17 +3,20 @@ using Microsoft.AspNetCore.Diagnostics;
 
 namespace gymus_server.Shared.Exceptions;
 
-public class GlobalExceptionHandler : IExceptionHandler {
+public class GlobalExceptionHandler : IExceptionHandler
+{
     public async ValueTask<bool> TryHandleAsync(
         HttpContext httpContext,
         Exception exception,
         CancellationToken cancellationToken
-    ) {
+    )
+    {
         var response = httpContext.Response;
 
         response.ContentType = "application/json";
 
-        var statusCode = exception switch {
+        var statusCode = exception switch
+        {
             BadCredentialsException => StatusCodes.Status401Unauthorized,
             ForbiddenAccessException => StatusCodes.Status403Forbidden,
             NotFoundException => StatusCodes.Status404NotFound,

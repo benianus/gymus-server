@@ -5,26 +5,29 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>gymus_server</RootNamespace>
+        <PublishAot>false</PublishAot>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="BCrypt.Net-Next" Version="4.2.0"/>
-        <PackageReference Include="Dapper" Version="2.1.72"/>
-        <PackageReference Include="FluentValidation" Version="12.1.1"/>
-        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1"/>
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.11"/>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.1"/>
-        <PackageReference Include="Microsoft.Build.Framework" Version="18.0.2"/>
-        <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.22.0"/>
-        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.2"/>
-        <PackageReference Include="Npgsql" Version="10.0.2"/>
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.22.0"/>
+        <PackageReference Include="BCrypt.Net-Next" Version="4.2.0" />
+        <PackageReference Include="Dapper" Version="2.1.72" />
+        <PackageReference Include="FluentValidation" Version="12.1.1" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.11" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.1" />
+        <PackageReference Include="Microsoft.Build.Framework" Version="18.0.2" />
+        <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.22.0" />
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.2" />
+        <PackageReference Include="Npgsql" Version="10.0.2" />
+        <PackageReference Include="Serilog" Version="4.4.0" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.22.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Src\GymusApp\Reports\Dtos\Requests\"/>
-        <Folder Include="Src\GymusApp\Reports\Dtos\Responses\"/>
-        <Folder Include="wwwroot\Uploads\"/>
+        <Folder Include="Src\GymusApp\Reports\Dtos\Requests\" />
+        <Folder Include="Src\GymusApp\Reports\Dtos\Responses\" />
+        <Folder Include="wwwroot\Uploads\" />
     </ItemGroup>
 
 </Project>

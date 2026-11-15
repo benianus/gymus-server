@@ -11,6 +11,11 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
+/**
+* Caching
+*/
+
+builder.Services.AddMemoryCache();
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -25,15 +30,13 @@ builder.Services.AddProblemDetails();
 /***
  * security layers
  */
-builder.Services.AddHttpsRedirection(options => {
-        options.HttpsPort = 8080;
-        options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
-    }
-);
-builder.Services.AddCors(corsOptions => {
+
+builder.Services.AddCors(corsOptions =>
+    {
         corsOptions.AddPolicy(
             nameof(CorsPolicies.GymusApiPolicy),
-            policyBuilder => {
+            policyBuilder =>
+            {
                 policyBuilder.WithOrigins("http://localhost:5138", "https://localhost:7118")
                              .AllowAnyHeader()
                              .AllowAnyHeader();
@@ -43,8 +46,10 @@ builder.Services.AddCors(corsOptions => {
 );
 builder.Services
        .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-       .AddJwtBearer(jwtBearerOptions => {
-                jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters {
+       .AddJwtBearer(jwtBearerOptions =>
+            {
+                jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters
+                {
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
@@ -59,10 +64,12 @@ builder.Services
                 };
             }
         );
-builder.Services.AddAuthorization(options => {
+builder.Services.AddAuthorization(options =>
+    {
         options.AddPolicy(
             nameof(AuthorizationPolicies.MembershipsOwner),
-            policy => {
+            policy =>
+            {
                 policy.Requirements.Add(new MembershipsOwnerRequirement());
             }
         );
@@ -73,16 +80,19 @@ builder.Services.AddAuthorization(options => {
     }
 );
 
-builder.Services.AddRateLimiter(options => {
+builder.Services.AddRateLimiter(options =>
+    {
         options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
         options.AddPolicy(
             nameof(RateLimiterPolicies.AuthRateLimiter),
-            context => {
+            context =>
+            {
                 var id = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 
                 return RateLimitPartition.GetFixedWindowLimiter(
                     id,
-                    _ => new FixedWindowRateLimiterOptions {
+                    _ => new FixedWindowRateLimiterOptions
+                    {
                         AutoReplenishment = false,
                         PermitLimit = 5,
                         QueueLimit = 0,
@@ -93,11 +103,13 @@ builder.Services.AddRateLimiter(options => {
             }
         );
 
-        options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context => {
+        options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+            {
                 var id = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
                 return RateLimitPartition.GetFixedWindowLimiter(
                     id,
-                    _ => new FixedWindowRateLimiterOptions {
+                    _ => new FixedWindowRateLimiterOptions
+                    {
                         AutoReplenishment = false,
                         PermitLimit = 10,
                         QueueLimit = 0,

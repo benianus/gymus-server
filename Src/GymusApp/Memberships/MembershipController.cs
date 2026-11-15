@@ -18,7 +18,8 @@ public class MembershipController(
     IValidator<MemberUpdateRequestDto> memberUpdateRequestValidator,
     SecurityUtils securityUtils,
     IAuthorizationService authorizationService
-) : ControllerBase {
+) : ControllerBase
+{
     [Authorize(Roles = "Owner")]
     [HttpPost("register")]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -26,7 +27,8 @@ public class MembershipController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> RegisterMember([FromForm] RegisterMemberRequestDto dto) {
+    public async Task<IActionResult> RegisterMember([FromForm] RegisterMemberRequestDto dto)
+    {
         await registerMemberValidator.ValidateAndThrowAsync(dto);
         await membershipService.RegisterMembership(dto);
         return Created();
@@ -40,7 +42,8 @@ public class MembershipController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> RecordMemberAttendance([FromRoute] int memberId) {
+    public async Task<IActionResult> RecordMemberAttendance([FromRoute] int memberId)
+    {
         await authorizationService.AuthorizeAsync(User, memberId, "MembershipsOwner");
         if (IsIdValid(memberId)) return BadRequest(new ApiResponse<List<string>>(["Invalid Id"]));
         await membershipService.RecordAttendance(memberId);
@@ -54,7 +57,8 @@ public class MembershipController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> RenewMembership([FromRoute] int memberId) {
+    public async Task<IActionResult> RenewMembership([FromRoute] int memberId)
+    {
         await authorizationService.AuthorizeAsync(User, memberId, "MembershipsOwner");
         if (IsIdValid(memberId)) return BadRequest(new ApiResponse<List<string>>(["Invalid Id"]));
         await membershipService.RenewMembership(memberId);
@@ -71,7 +75,8 @@ public class MembershipController(
     public async Task<IActionResult> GetAllMembers(
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 9
-    ) {
+    )
+    {
         var pagedResponse = await membershipService.GetAllMembers(page, pageSize);
         return Ok(pagedResponse);
     }
@@ -83,7 +88,8 @@ public class MembershipController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> GetMemberCard(int memberId) {
+    public async Task<IActionResult> GetMemberCard(int memberId)
+    {
         // verify ownership-policy
         await authorizationService.AuthorizeAsync(User, memberId, "MembershipsOwner");
         if (IsIdValid(memberId)) return BadRequest(new ApiResponse<List<string>>(["Invalid Id"]));
@@ -98,7 +104,8 @@ public class MembershipController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> DeleteMember([FromRoute] int memberId) {
+    public async Task<IActionResult> DeleteMember([FromRoute] int memberId)
+    {
         await authorizationService.AuthorizeAsync(User, memberId, "MembershipsOwner");
         return NoContent();
     }
@@ -113,7 +120,8 @@ public class MembershipController(
     public async Task<IActionResult> UpdateMember(
         [FromRoute] int memberId,
         [FromBody] MemberUpdateRequestDto dto
-    ) {
+    )
+    {
         await authorizationService.AuthorizeAsync(User, memberId, "MembershipsOwner");
         await memberUpdateRequestValidator.ValidateAndThrowAsync(dto);
         await membershipService.UpdateMember(memberId, dto);
