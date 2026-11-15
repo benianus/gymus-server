@@ -1,8 +1,10 @@
+using gymus_server.GymusApp.Memberships.Dtos.Requests;
 using gymus_server.Shared.Dtos;
 
 namespace gymus_server.Shared.Utlis;
 
-public static class Helpers {
+public static class Helpers
+{
     /**
      * <summary>Check if the comes from client side is valid</summary>
      * <param name="id">Id comes from url path parameter</param>
@@ -104,5 +106,27 @@ public static class Helpers {
             hasNextPage,
             hasPreviousPage
         );
+    }
+
+    public static async Task<Dictionary<string, string?>>
+        UploadFiles(RegisterMemberRequestDto dto) {
+        var birthCertificate = await UploadFile(dto.BirthCertificate);
+        var medicalCertificate = await UploadFile(dto.MedicalCertificate);
+        var personalPhoto = await UploadFile(dto.PersonalPhoto);
+        var parentalAuthorization = await UploadFile(dto.ParentalAuthorization);
+
+        return new Dictionary<string, string?> {
+            {
+                "birthCertificate",
+                birthCertificate ?? throw new Exception("birthCertificate should not be null")
+            }, {
+                "medicalCertificate",
+                medicalCertificate ?? throw new Exception("medicalCertificate should not be null")
+            }, {
+                "personalPhoto",
+                personalPhoto ?? throw new Exception("personalPhoto should not null")
+            },
+            { "parentalAuthorization", parentalAuthorization }
+        };
     }
 }

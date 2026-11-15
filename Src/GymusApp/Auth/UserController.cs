@@ -25,7 +25,8 @@ public partial class UserController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> Login([FromBody] LoginRequestDto loginRequestDto) {
+    public async Task<IActionResult> Login([FromBody] LoginRequestDto loginRequestDto)
+    {
         await loginRequestValidator.ValidateAndThrowAsync(loginRequestDto);
         var authResponse = await userService.Login(loginRequestDto);
         return Ok(new ApiResponse<AuthResponseDto>(authResponse));
@@ -37,12 +38,14 @@ public partial class UserController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> Register([FromBody] RegisterRequestDto registerRequestDto) {
+    public async Task<IActionResult> Register([FromBody] RegisterRequestDto registerRequestDto)
+    {
         var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 
         var result = await registerRequestValidator.ValidateAsync(registerRequestDto);
 
-        if (result.IsValid) {
+        if (result.IsValid)
+        {
             LogRegisterFailedUserUsernameEnterInvalidInputFromIpIp(registerRequestDto.Username, ip);
             var errors = result.Errors.Select(e => e.ErrorMessage).ToList();
             return BadRequest(new ApiResponse<List<string>>(errors));
@@ -61,7 +64,8 @@ public partial class UserController(
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> RefreshToken(
         [FromBody] RefreshTokenRequestDto refreshTokenRequestDto
-    ) {
+    )
+    {
         var refreshTokenResponse = await userService.RefreshToken(refreshTokenRequestDto);
         return Ok(new ApiResponse<RefreshTokenResponseDto>(refreshTokenResponse));
     }
@@ -74,7 +78,8 @@ public partial class UserController(
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Logout(
         [FromBody] LogoutRequestDto logoutRequestDto
-    ) {
+    )
+    {
         await userService.Logout(logoutRequestDto);
         return Ok();
     }

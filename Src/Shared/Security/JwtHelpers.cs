@@ -69,7 +69,7 @@ public class JwtHelpers(
 
     public Claim[] GenerateClaims(User user) => [
         new(nameof(Claims.UserId), user.Id.ToString()),
-        new("username", user.Username),
-        new("role", user.Role)
+        new(nameof(Claims.Username), user.Username),
+        new(nameof(Claims.Role), user.Role)
     ];
 }

@@ -3,7 +3,8 @@ using gymus_server.GymusApp.Memberships.Models;
 
 namespace gymus_server.GymusApp.Memberships;
 
-public static class MemberMappers {
+public static class MemberMappers
+{
     public static MembersResponseDto ToDto(this Member member) => new(
         member.Id,
         member.FirstName,

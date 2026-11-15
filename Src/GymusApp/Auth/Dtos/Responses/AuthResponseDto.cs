@@ -4,6 +4,7 @@ public record AuthResponseDto(
     int UserId,
     string AccessToken,
     string RefreshToken,
+    string Username,
     string Role,
     long ExpiresAt
 );

@@ -1,6 +1,7 @@
 namespace gymus_server.GymusApp.Auth;
 
-partial class UserService {
+partial class UserService
+{
     [LoggerMessage(
         LogLevel.Information,
         "logging succeed, user '{username}' success to login from ip: {ip}"
